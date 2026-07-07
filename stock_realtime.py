@@ -92,7 +92,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # 4. Header Bar
-st.markdown(f"<div style='display: flex; align-items: center; justify-content: space-between; margin-top: -30px; border-bottom: 1px solid {border_color}; padding-bottom: 6px;'><div style='display:flex; align-items:center;'><h3 style='color: {text_main}; font-weight:900; letter-spacing:-0.5px; margin: 0;'>📊 NEXUS QUANT</h3><span style='background-color: {border_color}; color: {text_sub}; padding: 2px 6px; border-radius: 4px; margin-left: 10px; font-size: 9px; font-weight: 700;'>INTELLIGENT TERMINAL v25.0</span></div><div style='font-size:11px; color:{text_sub};'><span class='pulse-beacon'></span>QUANT DATASTREAM CONNECTED</div></div>", unsafe_allow_html=True)
+st.markdown(f"<div style='display: flex; align-items: center; justify-content: space-between; margin-top: -30px; border-bottom: 1px solid {border_color}; padding-bottom: 6px;'><div style='display:flex; align-items:center;'><h3 style='color: {text_main}; font-weight:900; letter-spacing:-0.5px; margin: 0;'>📊 NEXUS QUANT</h3><span style='background-color: {border_color}; color: {text_sub}; padding: 2px 6px; border-radius: 4px; margin-left: 10px; font-size: 9px; font-weight: 700;'>INTELLIGENT TERMINAL v26.0</span></div><div style='font-size:11px; color:{text_sub};'><span class='pulse-beacon'></span>QUANT DATASTREAM CONNECTED</div></div>", unsafe_allow_html=True)
 st.write("")
 
 # 5. Top Menu Control Panel
@@ -126,14 +126,13 @@ def get_fx_rate(from_curr, to_curr):
         return data['Close'].iloc[-1] if not data.empty else 1.0
     except: return 1.0
 
-# 6. Grid Layout (ปรับขนาดคอลัมน์ฝั่งซ้ายและฝั่งขวา ให้กราฟกลางใหญ่ขยายปีกกว้างขึ้นเต็มตา)
+# 6. Grid Layout
 col_left_scan, col_right_main = st.columns([3.3, 6.7])
 
 # --- 🥇 ฝั่งที่ 1: แผงคัดกรองจัดกลุ่ม Sector 5 อันดับแรก (Left Column) ---
 with col_left_scan:
     st.markdown("<div class='section-title'>🗂️ INDUSTRY SECTOR SELECTOR</div>", unsafe_allow_html=True)
     
-    # เพิ่มหมวดหมู่ "🔥 Live Momentum (หุ้นซิ่งวันนี้)" เข้าไปในลิสต์ตัวเลือกหลัก
     selected_sector = st.selectbox("เลือกกลุ่มอุตสาหกรรม (GICS):", [
         "🔥 Live Momentum (หุ้นซิ่งวันนี้)",
         "🌐 Technology (เทคโนโลยี/AI)", "🏥 Healthcare (การแพทย์/ยา)", "💳 Financials (การเงิน/ธนาคาร)",
@@ -185,7 +184,6 @@ with col_left_scan:
             for output in task_outputs:
                 if output is not None: results.append(output)
         if results: 
-            # ── [CRITICAL CHANGE] ปรับปรุงจำกัดแถวการจัดอันดับหุ้นให้เหลือเพียง Top 5 ──
             return pd.DataFrame(results).sort_values(by="WINRATE", ascending=False).head(5).to_dict(orient="records")
         return []
 
@@ -209,7 +207,8 @@ with col_left_scan:
 active_ticker = st.session_state['selected_ticker']
 
 # --- 📊 ฝั่งที่ 2: ชาร์ตหลักแบบขยายพื้นที่เต็มจอ พร้อม Matrix ด้านล่างกราฟ (Right Main Column) ---
-with r_right_main := col_right_main:
+# [FIXED] ถอดโครงสร้าง Walrus Operator ตัวปัญหาในคำสั่ง block with ออกเพื่อความเสถียรสูงสุด
+with col_right_main:
     try:
         stock = yf.Ticker(active_ticker)
         cfg = timeframe_map[timeframe_choice]
@@ -274,7 +273,6 @@ with r_right_main := col_right_main:
             st.markdown(f"<div class='section-title' style='margin-top:12px; margin-bottom: 2px;'>📊 {long_name} SENTIMENT RADAR: {sentiment_pct:.1f}%</div>", unsafe_allow_html=True)
             st.markdown(f"<div class='sentiment-container'><div class='sentiment-bar' style='width: {sentiment_pct}%;'></div></div>", unsafe_allow_html=True)
             
-            # ── [CRITICAL CHANGE] ปรับปรุงขยายขนาดกราฟแท่งเทียนให้มีความสูงใหญ่และกว้างขวางเต็มอิ่ม ──
             fig = make_subplots(rows=2, cols=1, shared_xaxes=True, row_heights=[0.80, 0.20], vertical_spacing=0.02)
             fig.add_trace(go.Candlestick(
                 x=hist_chart_converted.index, open=hist_chart_converted['Open'], high=hist_chart_converted['High'], low=hist_chart_converted['Low'], close=hist_chart_converted['Close'],
@@ -290,7 +288,6 @@ with r_right_main := col_right_main:
             fig.update_xaxes(gridcolor=grid_chart)
             st.plotly_chart(fig, use_container_width=True)
             
-            # --- ── [CRITICAL CHANGE] ย้ายแผง SPOT & OPTIONS MATRIX ลงมาเรนเดอร์ขนานกันใต้กราฟ ── ---
             st.write("---")
             st.markdown("<div class='section-title'>🎯 LIVE SPOT & OPTIONS MATRIX DIAGNOSTIC</div>", unsafe_allow_html=True)
             
@@ -310,7 +307,6 @@ with r_right_main := col_right_main:
             shares_to_buy = int(allowed_loss / per_share_loss) if per_share_loss > 0 else 0
             total_investment = shares_to_buy * current_price
             
-            # จัดแบ่งสัดส่วนแผงเป้าหมายราคา Money Management และตารางสูตรแนวรับแนวต้านแบบแนวนอนอย่างประณีต
             mb1, mb2, mb3 = st.columns([2.5, 3.2, 4.3])
             
             with mb1:
@@ -335,7 +331,6 @@ with r_right_main := col_right_main:
                 }
                 st.table(pd.DataFrame(sr_table).set_index("ระดับสถิติ"))
                 
-            # แผงดาวน์โหลดและคำแนะนำออปชันแนวนอนชั้นล่างสุด
             bot_col1, bot_col2 = st.columns([6.5, 3.5])
             with bot_col1:
                 try:
