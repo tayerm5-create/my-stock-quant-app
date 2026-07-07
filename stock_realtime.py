@@ -87,12 +87,11 @@ st.markdown("""
     }
     
     /* Table Enhancements */
-    .stDataFrame, table {
+    .stTable, table, th, td, tr {
+        color: #FFFFFF !important; 
         background-color: #131722 !important;
-        color: #FFFFFF !important;
+        border: 1px solid #2A2E39 !important;
         border-collapse: collapse;
-        border-radius: 8px;
-        overflow: hidden;
     }
     th {
         background-color: #1C2030 !important;
@@ -174,15 +173,15 @@ with main_col:
                     with d3:
                         st.markdown(f"<div class='quant-card'><div class='card-title'>ราคาต่ำสุดรอบเซสชัน</div><div class='card-value' style='color:#FF5252;'>{low_val:,.2f}</div><div style='color:#848E9C; font-size:13px; margin-top:4px;'>24H Sessions Low</div></div>", unsafe_allow_html=True)
                     
-                    # --- TradingView-Like Interactive Chart ---
+                    # --- TradingView-Like Interactive Chart (แก้ไข Syntax เรียบร้อยแล้ว) ---
                     st.write("")
                     st.markdown("#### 📈 แผนภูมิโครงสร้างราคาแท่งเทียนระดับสากล (Interactive Candlestick)")
                     
                     fig = go.Figure(data=[go.Candlestick(
                         x=hist_chart.index, open=hist_chart['Open'], high=hist_chart['High'],
                         low=hist_chart['Low'], close=hist_chart['Close'],
-                        increasing_line_color='#00E676', increasing_fill_color='#00E676',
-                        decreasing_line_color='#FF5252', decreasing_fill_color='#FF5252'
+                        increasing=dict(line=dict(color='#00E676'), fillcolor='#00E676'),
+                        decreasing=dict(line=dict(color='#FF5252'), fillcolor='#FF5252')
                     )])
                     fig.update_layout(
                         template="plotly_dark", xaxis_rangeslider_visible=False,
