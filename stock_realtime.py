@@ -211,19 +211,21 @@ with main_col:
                     with d2: st.markdown(f"<div class='quant-card'><div class='card-title'>สูงสุดรอบวัน ({display_currency})</div><div class='card-value' style='color:#388BFD;'>{high_val:,.2f}</div></div>", unsafe_allow_html=True)
                     with d3: st.markdown(f"<div class='quant-card'><div class='card-title'>ต่ำสุดรอบวัน ({display_currency})</div><div class='card-value' style='color:#F85149;'>{low_val:,.2f}</div></div>", unsafe_allow_html=True)
                     
-                    # --- Subplots (Clean Chart Styling) ---
+                    # --- Subplots (Clean Chart Styling - FIXED LINE_DASH) ---
                     st.write("")
                     fig = make_subplots(rows=2, cols=1, shared_xaxes=True, row_heights=[0.75, 0.25], vertical_spacing=0.04)
                     
                     fig.add_trace(go.Candlestick(
                         x=hist_chart_converted.index, open=hist_chart_converted['Open'], high=hist_chart_converted['High'], low=hist_chart_converted['Low'], close=hist_chart_converted['Close'],
-                        increasing=dict(line=dict(color='#2EA043'), fillcolor='#2EA043'), # สีเขียวสะอาดตาแบบ GitHub
-                        decreasing=dict(line=dict(color='#F85149'), fillcolor='#F85149')  # สีแดงสว่างละมุน
+                        increasing=dict(line=dict(color='#2EA043'), fillcolor='#2EA043'),
+                        decreasing=dict(line=dict(color='#F85149'), fillcolor='#F85149')
                     ), row=1, col=1)
                     
                     fig.add_trace(go.Scatter(x=hist_chart_converted.index, y=hist_chart_converted['RSI'], line=dict(color='#D29922', width=1.2)), row=2, col=1)
-                    fig.add_hline(y=70, line_dash="shortdot", line_color="#F85149", row=2, col=1)
-                    fig.add_hline(y=30, line_dash="shortdot", line_color="#2EA043", row=2, col=1)
+                    
+                    # แก้ไข line_dash จาก shortdot เป็น dash เรียบร้อยแล้วครับ
+                    fig.add_hline(y=70, line_dash="dash", line_color="#F85149", row=2, col=1)
+                    fig.add_hline(y=30, line_dash="dash", line_color="#2EA043", row=2, col=1)
                     
                     fig.update_layout(template="plotly_dark", xaxis_rangeslider_visible=False, paper_bgcolor='#0E1117', plot_bgcolor='#161B22', margin=dict(l=4, r=4, t=4, b=4), height=460, showlegend=False)
                     fig.update_yaxes(gridcolor='#21262D', zerolinecolor='#21262D')
