@@ -12,7 +12,7 @@ st.set_page_config(
     page_title="NEXUS QUANT // TERMINAL",
     page_icon="📊",
     layout="wide",
-    initial_sidebar_state="collapsed"
+    initial_sidebar_state="expanded" # เปิดแถบซ้ายสำหรับซ่อนฟังก์ชันตั้งค่าเงินทุนพอร์ต
 )
 
 # 2. Setup State Memory
@@ -67,10 +67,19 @@ st.markdown(f"""
     .zone-tp {{ background-color: rgba(255, 214, 0, 0.04); color: #FFD600; border-color: rgba(255, 214, 0, 0.15); }}
     .zone-sl {{ background-color: rgba(255, 82, 82, 0.04); color: #FF5252; border-color: rgba(255, 82, 82, 0.15); }}
     
+    /* 📈 Custom Premium Grid Table Bars (จัดระเบียบตารางพิกัดแนวรับแนวต้านใหม่) 📈 */
+    .matrix-bar-row {{ display: flex; justify-content: space-between; padding: 6px 12px; border-radius: 4px; margin-bottom: 4px; font-size: 11px; font-weight: 600; border: 1px solid {border_color}; }}
+    .m-r2 {{ background-color: rgba(255, 82, 82, 0.05); color: #FF5252; }}
+    .m-r1 {{ background-color: rgba(255, 82, 82, 0.02); color: #FF8A80; }}
+    .m-pivot {{ background-color: rgba(41, 98, 255, 0.04); color: #58A6FF; }}
+    .m-s1 {{ background-color: rgba(0, 230, 118, 0.02); color: #B9F6CA; }}
+    .m-s2 {{ background-color: rgba(0, 230, 118, 0.05); color: #00E676; }}
+    
     .rank-box-container {{ background-color: {bg_card}; border: 1px solid {border_color}; border-radius: 6px; margin-bottom: 6px; padding: 2px 10px; transition: all 0.2s ease; display: block; position: relative; }}
     .rank-box-container:hover {{ border-color: {card_hover}; }}
     .active-row-fx {{ border-color: {card_hover} !important; background-color: rgba(41, 98, 255, 0.04) !important; }}
     
+    section[data-testid="stSidebar"] {{ background-color: {bg_card} !important; border-right: 1px solid {border_color}; }}
     div.stButton > button {{ background-color: transparent !important; color: {text_main} !important; border: none !important; padding: 6px 0px !important; width: 100% !important; text-align: left !important; font-weight: 700 !important; font-size: 13px !important; }}
     div.stButton > button:hover {{ color: {card_hover} !important; }}
     
@@ -83,38 +92,37 @@ st.markdown(f"""
     .sentiment-container {{ background-color: {sentiment_bg}; border-radius: 4px; height: 4px; width: 100%; margin-top: 4px; margin-bottom: 10px; overflow: hidden; }}
     .sentiment-bar {{ background: linear-gradient(90deg, #FF5252 0%, #FFD600 50%, #00E676 100%); height: 100%; transition: width 0.6s ease; }}
     
-    .stTable, table, th, td, tr {{ color: {text_main} !important; background-color: {bg_card} !important; border: 1px solid {border_color} !important; border-collapse: collapse; }}
-    th {{ background-color: {th_bg} !important; color: {card_hover} !important; font-weight: 700 !important; font-size: 10px; padding: 6px !important; text-transform: uppercase; }}
-    td {{ padding: 6px !important; font-size: 11px; border-bottom: 1px solid {border_color} !important; }}
-    
     div[data-testid="stDownloadButton"] > button {{ background-color: {card_hover} !important; color: white !important; border: none !important; padding: 8px !important; font-size: 12px !important; font-weight: 600 !important; border-radius: 4px !important; }}
     </style>
 """, unsafe_allow_html=True)
 
 # 4. Header Bar
-st.markdown(f"<div style='display: flex; align-items: center; justify-content: space-between; margin-top: -30px; border-bottom: 1px solid {border_color}; padding-bottom: 6px;'><div style='display:flex; align-items:center;'><h3 style='color: {text_main}; font-weight:900; letter-spacing:-0.5px; margin: 0;'>📊 NEXUS QUANT</h3><span style='background-color: {border_color}; color: {text_sub}; padding: 2px 6px; border-radius: 4px; margin-left: 10px; font-size: 9px; font-weight: 700;'>INTELLIGENT TERMINAL v29.0</span></div><div style='font-size:11px; color:{text_sub};'><span class='pulse-beacon'></span>QUANT DATASTREAM CONNECTED</div></div>", unsafe_allow_html=True)
+st.markdown(f"<div style='display: flex; align-items: center; justify-content: space-between; margin-top: -30px; border-bottom: 1px solid {border_color}; padding-bottom: 6px;'><div style='display:flex; align-items:center;'><h3 style='color: {text_main}; font-weight:900; letter-spacing:-0.5px; margin: 0;'>📊 NEXUS QUANT</h3><span style='background-color: {border_color}; color: {text_sub}; padding: 2px 6px; border-radius: 4px; margin-left: 10px; font-size: 9px; font-weight: 700;'>INTELLIGENT TERMINAL v30.0</span></div><div style='font-size:11px; color:{text_sub};'><span class='pulse-beacon'></span>QUANT DATASTREAM CONNECTED</div></div>", unsafe_allow_html=True)
 st.write("")
 
-# 5. Top Menu Control Panel
-st.markdown("<div class='top-config-bar'>", unsafe_allow_html=True)
-tc1, tc2, tc3, tc4, tc5, tc6 = st.columns([1.5, 1.4, 1.8, 1.6, 1.8, 1.1])
+# 5. 🛠️ [OPTIMIZATION 1] ย้ายการตั้งค่าความเสี่ยงพอร์ตหลบเข้า Sidebar เพื่อให้หน้าจอบนสุดคลีนโล่งเป็นระเบียบ
+st.sidebar.markdown("<h4 style='font-size:14px; font-weight:700; color:#58A6FF;'>🧮 PORTFOLIO ACCOUNT</h4>", unsafe_allow_html=True)
+st.sidebar.write("---")
+account_capital = st.sidebar.number_input("เงินทุนรวมในพอร์ต:", value=10000.0, step=1000.0)
+risk_percent = st.sidebar.number_input("ความเสี่ยงต่อไม้ (%):", value=1.0, min_value=0.1, max_value=10.0, step=0.5)
 
-with tc1: account_capital = st.number_input("เงินทุนรวมในพอร์ต:", value=10000.0, step=1000.0)
-with tc2: risk_percent = st.number_input("ความเสี่ยงต่อไม้ (%):", value=1.0, min_value=0.1, max_value=10.0, step=0.5)
-with tc3: risk_profile = st.selectbox("โมเดลเป้าหมายราคา:", ["CONSERVATIVE (ต่ำ)", "MODERATE (ปานกลาง)", "AGGRESSIVE (สูง)"])
-with tc4: timeframe_choice = st.selectbox("กรอบเวลาชาร์ต:", ["M5 (5 นาที)", "M15 (15 นาที)", "M30 (30 นาที)", "H1 (1 ชั่วโมง)", "D1 (1 วัน)"])
-with tc5: currency_target = st.selectbox("สกุลเงินประมวลผล:", ["สกุลเงินดั้งเดิมของหุ้น", "THB (บาทไทย)", "USD (ดอลลาร์สหรัฐ)"])
-with tc6: 
+# แผงเมนูด้านบนเหลือเพียงตัวกรองหลักและปุ่มสลับกรอบเวลาด่วน (Quick Tabs Switcher)
+st.markdown("<div class='top-config-bar'>", unsafe_allow_html=True)
+tc1, tc2, tc3, tc4 = st.columns([2.5, 3.5, 3.5, 1.5])
+
+with tc1: risk_profile = st.selectbox("โมเดลบริหารความเสี่ยง:", ["CONSERVATIVE (ต่ำ)", "MODERATE (ปานกลาง)", "AGGRESSIVE (สูง)"])
+with tc2: timeframe_choice = st.radio("เลือกกรอบเวลาวิเคราะห์ชาร์ต (Quick Tabs):", ["M5 (5นาที)", "M15 (15นาที)", "H1 (1ชม.)", "D1 (1วัน)"], horizontal=True)
+with tc3: currency_target = st.selectbox("สกุลเงินในการประมวลผล:", ["สกุลเงินดั้งเดิมของหุ้น", "THB (บาทไทย)", "USD (ดอลลาร์สหรัฐ)"])
+with tc4: 
     st.write("<div style='margin-top:6px;'></div>", unsafe_allow_html=True)
     st.session_state['dark_mode'] = st.toggle("🌙 Dark Mode", value=st.session_state['dark_mode'])
 st.markdown("</div>", unsafe_allow_html=True)
 
 timeframe_map = {
-    "M5 (5 นาที)": {"period": "5d", "interval": "5m"},
-    "M15 (15 นาที)": {"period": "5d", "interval": "15m"},
-    "M30 (30 นาที)": {"period": "5d", "interval": "30m"},
-    "H1 (1 ชั่วโมง)": {"period": "7d", "interval": "60m"},
-    "D1 (1 วัน)": {"period": "1y", "interval": "1d"}
+    "M5 (5นาที)": {"period": "5d", "interval": "5m"},
+    "M15 (15นาที)": {"period": "5d", "interval": "15m"},
+    "H1 (1ชม.)": {"period": "7d", "interval": "60m"},
+    "D1 (1วัน)": {"period": "1y", "interval": "1d"}
 }
 
 @st.cache_data(ttl=3600)
@@ -146,7 +154,7 @@ with col_left_scan:
         "🌐 Technology (เทคโนโลยี/AI)": ["NVDA", "AAPL", "MSFT", "AMD", "AVGO", "DELTA.BK"],
         "🏥 Healthcare (การแพทย์/ยา)": ["LLY", "JNJ", "MRK", "PFE", "BDMS.BK", "BH.BK"],
         "💳 Financials (การเงิน/ธนาคาร)": ["JPM", "BAC", "WFC", "GS", "KBANK.BK", "SCB.BK"],
-        "🛍️ Consumer Cyclical (สินค้าฟุ่มเฟือย)": ["TSLA", "AMZN", "HD", "MCD", "NKE", "LOW", "SBUX"],
+        "🛍️ Consumer Cyclical (สินค้าฟุ่มเฟือย)": ["TSLA", "AMZN", "HD", "MCD", "NKE", "CPALL.BK"],
         "🍞 Consumer Defensive (สินค้าจำเป็น)": ["PG", "WMT", "COST", "KO", "PEP", "CPF.BK"],
         "⚡ Energy (พลังงาน/น้ำมัน)": ["XOM", "CVX", "SHEL", "COP", "PTT.BK", "PTTEP.BK"],
         "🏭 Industrials (อุตสาหกรรม/บิน)": ["GE", "CAT", "HON", "BA", "LMT", "AOT.BK"],
@@ -183,8 +191,7 @@ with col_left_scan:
             task_outputs = executor.map(fetch_single_scanner_data, tickers)
             for output in task_outputs:
                 if output is not None: results.append(output)
-        if results: 
-            return pd.DataFrame(results).sort_values(by="WINRATE", ascending=False).head(5).to_dict(orient="records")
+        if results: return pd.DataFrame(results).sort_values(by="WINRATE", ascending=False).head(5).to_dict(orient="records")
         return []
 
     leaderboard_data = scan_sector_leaderboard(current_watchlist)
@@ -201,8 +208,6 @@ with col_left_scan:
                 st.markdown(f"<div class='sub-price-text'>Close: {row['PRICE']:,.2f}</div>", unsafe_allow_html=True)
             with r_col3: st.markdown(f"<span class='winrate-pill'>{row['WINRATE']:.1f}%</span>", unsafe_allow_html=True)
             st.markdown("</div>", unsafe_allow_html=True)
-    else:
-        st.warning("⚠️ ระบบข้อมูลกำลังรอประมวลผลสัญญาณ...")
 
 active_ticker = st.session_state['selected_ticker']
 
@@ -218,7 +223,7 @@ with col_right_main:
             
         hist_5d = stock.history(period="5d")
         if hist_5d.empty:
-            st.error(f"🚨 สัญญาณจำกัดชั่วคราว โปรดกดเปลี่ยนหุ้นสลับไปมาเพื่อรีเฟรช")
+            st.error(f"🚨 สัญญาณจำกัดชั่วคราว โปรดกดเปลี่ยนหุ้นเพื่อรีเฟรช")
         else:
             info = stock.info
             native_curr = info.get('currency', 'USD')
@@ -244,6 +249,7 @@ with col_right_main:
             with d2: st.markdown(f"<div class='quant-card {card_status_class}'><div class='card-title'>24H HIGH ({display_currency})</div><div class='card-value' style='color:#388BFD;'>{high_val:,.2f}</div></div>", unsafe_allow_html=True)
             with d3: st.markdown(f"<div class='quant-card {card_status_class}'><div class='card-title'>24H LOW ({display_currency})</div><div class='card-value' style='color:#FF5252;'>{low_val:,.2f}</div></div>", unsafe_allow_html=True)
             
+            # Fundamental Snapshot
             f_pe = info.get('trailingPE', None)
             f_div = info.get('dividendYield', 0.0)
             f_div_str = f"{f_div * 100:.2f}%" if f_div else "0.00%"
@@ -261,12 +267,16 @@ with col_right_main:
             hist_chart_converted = hist_chart.copy()
             for col in ['Open', 'High', 'Low', 'Close']: hist_chart_converted[col] = hist_chart_converted[col] * fx_factor
             
+            # RSI Calculation
             delta = hist_chart_converted['Close'].diff()
             gain = (delta.where(delta > 0, 0)).rolling(window=14).mean()
             loss = (-delta.where(delta < 0, 0)).rolling(window=14).mean()
             rs = gain / (loss + 1e-9)
             hist_chart_converted['RSI'] = 100 - (100 / (1 + rs))
             current_rsi = hist_chart_converted['RSI'].iloc[-1] if not hist_chart_converted['RSI'].empty else 50.0
+            
+            # ── 🛠️ [OPTIMIZATION 3] คำนวณอินดิเคเตอร์อัจฉริยะ เส้นค่าเฉลี่ย EMA 20 ฝังบนชาร์ตราคา ──
+            hist_chart_converted['EMA20'] = hist_chart_converted['Close'].ewm(span=20, adjust=False).mean()
             
             sentiment_pct = np.clip(50 + (price_pct * 5) + (current_rsi - 50) * 0.5, 5.0, 95.0)
             st.markdown(f"<div class='section-title' style='margin-top:12px; margin-bottom: 2px;'>📊 {long_name} SENTIMENT RADAR: {sentiment_pct:.1f}%</div>", unsafe_allow_html=True)
@@ -280,13 +290,18 @@ with col_right_main:
                 decreasing=dict(line=dict(color='#FF5252', width=1.5), fillcolor='#FF5252')
             ), row=1, col=1)
             
+            # วาดเส้นเนวิเกเตอร์ EMA 20 โอบล้อมแท่งเทียนสีฟ้านีออนบางเฉียบ
+            fig.add_trace(go.Scatter(
+                x=hist_chart_converted.index, y=hist_chart_converted['EMA20'],
+                line=dict(color='#00B0FF', width=1.3),
+                opacity=0.7,
+                hoverinfo='skip'
+            ), row=1, col=1)
+            
+            # เส้นระดับราคาปัจจุบัน
             fig.add_hline(
-                y=current_price, 
-                line_dash="dot", 
-                line_color="#2962FF", 
-                line_width=1.8, 
-                annotation_text=f" Current: {current_price:,.2f}", 
-                annotation_position="top right",
+                y=current_price, line_dash="dot", line_color="#2962FF", line_width=1.8, 
+                annotation_text=f" Current: {current_price:,.2f}", annotation_position="top right",
                 annotation_font=dict(size=10, color="#2962FF", family="Inter"),
                 row=1, col=1
             )
@@ -296,22 +311,12 @@ with col_right_main:
             fig.add_hline(y=30, line_dash="dash", line_color="#00E676", line_width=1.2, row=2, col=1)
             
             fig.update_layout(
-                template=plotly_template, 
-                xaxis_rangeslider_visible=False, 
-                paper_bgcolor=bg_app, 
-                plot_bgcolor=bg_card, 
-                margin=dict(l=4, r=4, t=4, b=4), 
-                height=490, 
-                showlegend=False,
-                # ── 🎯 [CRITICAL CHANGE] ปรับแต่ง dragmode เป็น 'pan' เพื่อเปิดระบบ "คลิกเมาส์ค้างเพื่อลากเลื่อนกราฟ" ──
-                dragmode='pan'
+                template=plotly_template, xaxis_rangeslider_visible=False, paper_bgcolor=bg_app, plot_bgcolor=bg_card, 
+                margin=dict(l=4, r=4, t=4, b=4), height=490, showlegend=False, dragmode='pan'
             )
-            
-            # ปลดล็อกแกนคงที่ (fixedrange=False) ทั้งแนวตั้งและแนวนอน เพื่อรองรับการซูมและลากสไลด์ ซ้าย-ขวา / ขึ้น-ลง
             fig.update_yaxes(gridcolor='#1F222E', zerolinecolor='#2A2E39', fixedrange=False, linewidth=1)
             fig.update_xaxes(gridcolor='#1F222E', fixedrange=False, linewidth=1)
             
-            # สั่งเรนเดอร์ชาร์ตพ่วงคอนฟิกเปิดระบบขยับด้วยเมาส์ Scroll
             st.plotly_chart(fig, use_container_width=True, config={'scrollZoom': True, 'displayModeBar': True})
             
             st.write("---")
@@ -351,11 +356,12 @@ with col_right_main:
                 """, unsafe_allow_html=True)
                 
             with mb3:
-                sr_table = {
-                    "ระดับสถิติ": ["แนวต้าน R2", "แนวต้าน R1", "ดุลยภาพ Pivot", "แนวรับ S1", "แนวรับ S2"],
-                    "พิกัดราคา": [f"{R2:,.2f}", f"{R1:,.2f}", f"{P:,.2f}", f"{S1:,.2f}", f"{S2:,.2f}"]
-                }
-                st.table(pd.DataFrame(sr_table).set_index("ระดับสถิติ"))
+                # ── 🛠️ [OPTIMIZATION 4] เรนเดอร์แผนพิกัดแนวรับแนวต้านแบบแถบสีกึ่งแดชบอร์ดระดับพรีเมียม ──
+                st.markdown(f"<div class='matrix-bar-row m-r2'><span>แนวต้านสำคัญ (R2)</span><span>{R2:,.2f}</span></div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='matrix-bar-row m-r1'><span>แนวต้านแรก (R1)</span><span>{R1:,.2f}</span></div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='matrix-bar-row m-pivot'><span>จุดดุลยภาพราคา (Pivot)</span><span>{P:,.2f}</span></div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='matrix-bar-row m-s1'><span>แนวรับแรก (S1)</span><span>{S1:,.2f}</span></div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='matrix-bar-row m-s2'><span>แนวรับสำคัญ (S2)</span><span>{S2:,.2f}</span></div>", unsafe_allow_html=True)
                 
             bot_col1, bot_col2 = st.columns([6.5, 3.5])
             with bot_col1:
