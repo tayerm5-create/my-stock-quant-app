@@ -121,7 +121,7 @@ with main_col:
                     rs = gain / (loss + 1e-9)
                     hist_chart_converted['RSI'] = 100 - (100 / (1 + rs))
                     
-                    # สกัดหาข้อมูลดัชนี Implied Volatility (IV) จริงของออปชัน (ถ้ามี)
+                    # สกัดหาข้อมูลดัชนี Implied Volatility (IV) จริงของออปชัน
                     try:
                         expirations = stock.options
                         if expirations:
@@ -161,12 +161,7 @@ with main_col:
                     fig.update_layout(template="plotly_dark", xaxis_rangeslider_visible=False, paper_bgcolor='#131722', plot_bgcolor='#131722', margin=dict(l=8, r=8, t=8, b=8), height=480, showlegend=False)
                     fig.update_yaxes(gridcolor='#1e222d', zerolinecolor='#1e222d')
                     fig.update_xaxes(gridcolor='#1e222d')
-                    st.markdown(f"""
-* 💠 **IMPLIED VOLATILITY (IV) MATRIX:** <span style='color:#FFD600; font-weight:bold;'>{iv_status}</span>
-* 💡 **QUANT ADVICE:** *{iv_advice}*
-* 🟢 **BULLISH CALL TRIGGER:** เปิดสถานะ **CALL** เมื่อราคาตัดผ่านสถิติเหนือ **{R1:,.2f}**
-* 🔴 **BEARISH PUT TRIGGER:** เปิดสถานะ **PUT** เมื่อราคาหลุดกรอบโครงสร้างล่าง **{S1:,.2f}**
-""", unsafe_allow_html=True)
+                    st.plotly_chart(fig, use_container_width=True)
                     
                     # --- Mathematical Quant Matrix ---
                     P = (high_val + low_val + current_price) / 3
@@ -197,12 +192,13 @@ with main_col:
                         
                     with r_box:
                         st.markdown(f"<h4 style='color: #FFD600;'>📊 ADVANCED VOLATILITY OPTIONS ENGINE ({display_currency})</h4>", unsafe_allow_html=True)
+                        # เติมคำสั่ง unsafe_allow_html=True เพื่อแก้ปัญหาแท็ก HTML หลุดเรียบร้อยครับ
                         st.markdown(f"""
                         * 💠 **IMPLIED VOLATILITY (IV) MATRIX:** <span style='color:#FFD600; font-weight:bold;'>{iv_status}</span>
                         * 💡 **QUANT ADVICE:** *{iv_advice}*
                         * 🟢 **BULLISH CALL TRIGGER:** เปิดสถานะ **CALL** เมื่อราคาตัดผ่านสถิติเหนือ **{R1:,.2f}**
                         * 🔴 **BEARISH PUT TRIGGER:** เปิดสถานะ **PUT** เมื่อราคาหลุดกรอบโครงสร้างล่าง **{S1:,.2f}**
-                        """)
+                        """, unsafe_allow_html=True)
             except Exception as e:
                 st.error(f"⚠️ เกิดข้อผิดพลาด: {str(e)}")
     else:
@@ -215,7 +211,6 @@ with scanner_col:
     
     watchlist = ["AAPL", "TSLA", "NVDA", "MSFT", "AMD", "META", "AMZN", "NFLX", "GOOGL", "BABA", "PTT.BK", "CPALL.BK"]
     
-    # ฟังก์ชันย่อยสำหรับรันคู่ขนานแบบความเร็วสูง (Multi-Threading Worker)
     def fetch_single_scanner_data(t):
         try:
             s = yf.Ticker(t)
@@ -236,7 +231,6 @@ with scanner_col:
     @st.cache_data(ttl=600)
     def scan_global_markets_multithreaded(tickers):
         results = []
-        # สั่งเปิดบอท 8 ตัวพร้อมกัน ยิงดึงข้อมูลแบบขนานช่วยรันครั้งแรกเร็วขึ้น 5 เท่า
         with ThreadPoolExecutor(max_workers=8) as executor:
             task_outputs = executor.map(fetch_single_scanner_data, tickers)
             for output in task_outputs:
