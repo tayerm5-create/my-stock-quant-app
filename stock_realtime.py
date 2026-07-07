@@ -8,17 +8,17 @@ from concurrent.futures import ThreadPoolExecutor
 
 # 1. Page Configuration
 st.set_page_config(
-    page_title="ALPHA TERMINAL // ONE-CLICK QUANT",
+    page_title="ALPHA TERMINAL // PRO QUANT",
     page_icon="⚡",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
-# 2. Setup State Memory (ระบบความจำสถานะคลิกเลือกหุ้น)
+# 2. Setup State Memory
 if 'dark_mode' not in st.session_state:
     st.session_state['dark_mode'] = True
 if 'selected_ticker' not in st.session_state:
-    st.session_state['selected_ticker'] = "NVDA" # ค่าเริ่มต้นสำหรับการเปิดเว็บครั้งแรก
+    st.session_state['selected_ticker'] = "NVDA"  # ค่าเริ่มต้นในการรันครั้งแรก
 
 # 3. Dynamic Injecting CSS Color Palettes
 if st.session_state['dark_mode']:
@@ -70,11 +70,7 @@ st.markdown(f"""
     .zone-tp {{ background-color: rgba(210, 153, 34, 0.05); color: #D29922; border-color: rgba(210, 153, 34, 0.12); }}
     .zone-sl {{ background-color: rgba(248, 81, 73, 0.05); color: #F85149; border-color: rgba(248, 81, 73, 0.12); }}
     
-    /* 🏆 Custom Clickable List Row 🏆 */
-    .rank-box-wrapper {{
-        background-color: {bg_card}; border: 1px solid {border_color}; border-radius: 8px;
-        margin-bottom: 8px; transition: all 0.2s ease; display: block; position: relative;
-    }}
+    .rank-box-wrapper {{ background-color: {bg_card}; border: 1px solid {border_color}; border-radius: 8px; margin-bottom: 8px; transition: all 0.2s ease; display: block; position: relative; }}
     .rank-box-wrapper:hover {{ border-color: {card_hover}; transform: scale(1.01); }}
     .active-row-fx {{ border-color: {card_hover} !important; background-color: rgba(88, 166, 255, 0.02) !important; }}
     
@@ -87,13 +83,8 @@ st.markdown(f"""
     .ticker-price {{ font-size: 11px; color: {text_sub}; text-align: left; }}
     .winrate-box {{ background-color: rgba(46, 160, 67, 0.08); border: 1px solid rgba(46, 160, 67, 0.15); color: #2EA043; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 700; }}
     
-    /* CSS จัดระเบียบปุ่มหลอกให้ใสสะอาดและคลุมทับทั้งการ์ด */
-    div.stButton > button {{
-        background-color: transparent !important; color: inherit !important; border: none !important;
-        padding: 10px 14px !important; width: 100% !important; text-align: left !important; border-radius: 8px !important;
-    }}
+    div.stButton > button {{ background-color: transparent !important; color: inherit !important; border: none !important; padding: 10px 14px !important; width: 100% !important; text-align: left !important; border-radius: 8px !important; }}
     div.stButton > button:hover {{ background-color: transparent !important; color: inherit !important; }}
-    div.stButton > button:active {{ background-color: transparent !important; }}
     
     .pulse-beacon {{ display: inline-block; width: 6px; height: 6px; background-color: #2EA043; border-radius: 50%; margin-right: 6px; box-shadow: 0 0 0 0 rgba(46, 160, 67, 0.7); animation: pulse 1.6s infinite; vertical-align: middle; }}
     @keyframes pulse {{ 0% {{ transform: scale(0.95); box-shadow: 0 0 0 0 rgba(46, 160, 67, 0.5); }} 70% {{ transform: scale(1); box-shadow: 0 0 0 4px rgba(46, 160, 67, 0); }} 100% {{ transform: scale(0.95); box-shadow: 0 0 0 0 rgba(46, 160, 67, 0); }} }}
@@ -107,7 +98,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # 4. App Banner Row
-st.markdown(f"<div style='display: flex; align-items: center; justify-content: space-between; margin-top: -30px; border-bottom: 1px solid {border_color}; padding-bottom: 8px;'><div style='display:flex; align-items:center;'><h3 style='color: {text_main}; font-weight:800; letter-spacing:-0.5px; margin: 0;'>⚡ ALPHA ENGINE</h3><span style='background-color: {border_color}; color: {text_sub}; padding: 2px 6px; border-radius: 4px; margin-left: 10px; font-size: 9px; font-weight: 600;'>ONE-CLICK RE-RENDER TERMINAL v15.0</span></div><div style='font-size:12px; color:{text_sub};'><span class='pulse-beacon'></span>LIVE CONNECTIONS RUNNING</div></div>", unsafe_allow_html=True)
+st.markdown(f"<div style='display: flex; align-items: center; justify-content: space-between; margin-top: -30px; border-bottom: 1px solid {border_color}; padding-bottom: 8px;'><div style='display:flex; align-items:center;'><h3 style='color: {text_main}; font-weight:800; letter-spacing:-0.5px; margin: 0;'>⚡ ALPHA ENGINE</h3><span style='background-color: {border_color}; color: {text_sub}; padding: 2px 6px; border-radius: 4px; margin-left: 10px; font-size: 9px; font-weight: 600;'>ONE-CLICK RE-RENDER TERMINAL v16.0</span></div><div style='font-size:12px; color:{text_sub};'><span class='pulse-beacon'></span>LIVE CONNECTIONS RUNNING</div></div>", unsafe_allow_html=True)
 st.write("")
 
 # 5. Top Menu Grid Control Panel
@@ -142,7 +133,7 @@ def get_fx_rate(from_curr, to_curr):
 # 6. 3-COLUMN MASTER ARCHITECTURE
 col_left_scan, col_center_chart, col_right_matrix = st.columns([3.1, 4.6, 2.3])
 
-# --- 🥇 ฝั่งที่ 1: ลีดเดอร์บอร์ดแบบกดคลิกเลือกตัวหุ้นได้ทันที (Left Column - Interactive Tabs) ---
+# --- 🥇 ฝั่งที่ 1: ลีดเดอร์บอร์ดระบบแท็บ (Left Column) ---
 with col_left_scan:
     st.markdown("<div class='section-title'>🏆 QUANT SECTOR LEADERBOARD</div>", unsafe_allow_html=True)
     tab_penny, tab_stable, tab_etf, tab_growth = st.tabs(["💵 Under $10", "💎 มั่นคงสูง", "📈 ETF/ปันผล", "🚀 เติบโตสูง"])
@@ -176,31 +167,21 @@ with col_left_scan:
             return pd.DataFrame(results).sort_values(by="WINRATE", ascending=False).head(8).to_dict(orient="records")
         return []
 
-    # ฟังก์ชันวาดปุ่มการ์ดจัดอันดับอัจฉริยะ (เมื่อกดคลิกจะบันทึก Ticker ล่าสุดทันที)
     def render_tab_leaderboard(sector_key):
         list_data = scan_sector_leaderboard(sectors_map[sector_key])
         if list_data:
-            # หากเพิ่งเปิดเว็บ ให้หยิบตัวอันดับ 1 ของแท็บนั้นๆ มารันเป็นค่าตั้งต้นรอไว้เลย
-            if st.session_state['selected_ticker'] == "NVDA" and sector_key != "growth" and len(list_data) > 0:
-                 pass
-                 
             for i, row in enumerate(list_data):
                 rank = i + 1
                 badge_class = "rank-1-bg" if rank == 1 else ("rank-2-bg" if rank == 2 else ("rank-3-bg" if rank == 3 else "rank-norm-bg"))
                 rank_icon = "🥇" if rank == 1 else ("🥈" if rank == 2 else ("🥉" if rank == 3 else f"{rank:02d}"))
                 
-                # ถ้าการ์ดตัวนี้รหัสตรงกับที่ผู้ใช้กดคลิกล่าสุด ให้ติดไฮไลท์กรอบเรืองแสงสีฟ้า
                 is_active = "active-row-fx" if st.session_state['selected_ticker'] == row['TICKER'] else ""
-                
-                # สรุปโครงสร้างการ์ดที่สอดไส้ปุ่มกดใสเอาไว้ด้านใน
                 st.markdown(f"<div class='rank-box-wrapper {is_active}'>", unsafe_allow_html=True)
                 
-                # เมื่อผู้ใช้คลิกเลือกตัวหุ้น การ์ดลิสต์จะรีรีเฟรชหน้าเว็บวาดกราฟและเป้าหมายทันที!
                 if st.button(f"‌‌ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; **{row['TICKER']}** <br> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span style='font-size:11px; color:{text_sub};'>Last Close: {row['PRICE']:,.2f}</span>", key=f"btn_{sector_key}_{row['TICKER']}"):
                     st.session_state['selected_ticker'] = row['TICKER']
                     st.rerun()
                 
-                # วาดไอคอนลำดับเหรียญและแคปซูลเปอร์เซ็นต์ Winrate ทับส่วยตกแต่งด้านข้าง
                 st.markdown(f"""
                 <div style='position: absolute; top: 12px; left: 14px; pointer-events: none; display: flex; align-items: center;'>
                     <div class='rank-badge {badge_class}'>{rank_icon}</div>
@@ -217,10 +198,9 @@ with col_left_scan:
     with tab_etf:    render_tab_leaderboard("etf")
     with tab_growth: render_tab_leaderboard("growth")
 
-# ดึงชื่อหุ้นปัจจุบันที่ระบบจำค่าเอาไว้จากการกดคลิกของผู้ใช้มาประมวลผลต่อ
 active_ticker = st.session_state['selected_ticker']
 
-# --- 📊 ฝั่งที่ 2: หน้าจอวิเคราะห์กราฟอัตโนมัติจากสัญญานคลิก (Center Column) ---
+# --- 📊 ฝั่งที่ 2: หน้าจอวิเคราะห์กราฟอัตโนมัติ (Center Column) ---
 with col_center_chart:
     try:
         stock = yf.Ticker(active_ticker)
@@ -249,7 +229,6 @@ with col_center_chart:
             long_name = info.get('longName', active_ticker)
             card_status_class = "card-bullish" if price_diff >= 0 else "card-bearish"
             
-            # บล็อกราคาหัวบนสุดขยับกะทัดรัด
             d1, d2, d3 = st.columns(3)
             arr_color = "#2EA043" if price_diff >= 0 else "#F85149"
             arr_icon = "▲" if price_diff >= 0 else "▼"
@@ -258,7 +237,6 @@ with col_center_chart:
             with d2: st.markdown(f"<div class='quant-card {card_status_class}'><div class='card-title'>24H HIGH ({display_currency})</div><div class='card-value' style='color:#388BFD;'>{high_val:,.2f}</div></div>", unsafe_allow_html=True)
             with d3: st.markdown(f"<div class='quant-card {card_status_class}'><div class='card-title'>24H LOW ({display_currency})</div><div class='card-value' style='color:#F85149;'>{low_val:,.2f}</div></div>", unsafe_allow_html=True)
             
-            # Sentiment Gauge
             hist_chart_converted = hist_chart.copy()
             for col in ['Open', 'High', 'Low', 'Close']: hist_chart_converted[col] = hist_chart_converted[col] * fx_factor
             
@@ -273,7 +251,6 @@ with col_center_chart:
             st.markdown(f"<div class='section-title' style='margin-top:14px; margin-bottom: 2px;'>📊 {long_name} SENTIMENT RADAR: {sentiment_pct:.1f}%</div>", unsafe_allow_html=True)
             st.markdown(f"<div class='sentiment-container'><div class='sentiment-bar' style='width: {sentiment_pct}%;'></div></div>", unsafe_allow_html=True)
             
-            # ชาร์ตแท่งเทียน
             fig = make_subplots(rows=2, cols=1, shared_xaxes=True, row_heights=[0.78, 0.22], vertical_spacing=0.03)
             fig.add_trace(go.Candlestick(
                 x=hist_chart_converted.index, open=hist_chart_converted['Open'], high=hist_chart_converted['High'], low=hist_chart_converted['Low'], close=hist_chart_converted['Close'],
@@ -289,13 +266,14 @@ with col_center_chart:
             fig.update_xaxes(gridcolor=grid_chart)
             st.plotly_chart(fig, use_container_width=True)
             
-            # เก็บข้อมูลส่งต่อไปเรนเดอร์ฝั่งขวา
+            # [FIXED] เพิ่มตัวแปร risk_profile เก็บเข้า State เพื่อให้ฝั่งขวาเรียกใช้งานได้อย่างปลอดภัย
             st.session_state['current_calculated_matrix'] = {
-                "high_val": high_val, "low_val": low_val, "current_price": current_price, "stock": stock, "display_currency": display_currency
+                "high_val": high_val, "low_val": low_val, "current_price": current_price, 
+                "stock": stock, "display_currency": display_currency, "risk_profile": risk_profile
             }
     except Exception as e: st.error(f"⚠️ การโหลดฐานข้อมูลตัวคัดกรองขัดข้อง: {str(e)}")
 
-# --- 🎯 ฝั่งที่ 3: แผงสูตรคำนวณจุดซื้อสะสม-เป้าทำกำไรอัตโนมัติ (Right Column - Instant Matrix) ---
+# --- 🎯 ฝั่งที่ 3: แผงสูตรคำนวณจุดซื้อสะสม-เป้าทำกำไรอัตโนมัติ (Right Column) ---
 with col_right_matrix:
     st.markdown("<div class='section-title'>🎯 SPOT & OPTIONS MATRIX</div>", unsafe_allow_html=True)
     
@@ -303,39 +281,5 @@ with col_right_matrix:
         cm = st.session_state['current_calculated_matrix']
         high_val, low_val, current_price, display_currency = cm["high_val"], cm["low_val"], cm["current_price"], cm["display_currency"]
         
-        P = (high_val + low_val + current_price) / 3
-        R1, S1 = (2 * P) - low_val, (2 * P) - high_val
-        R2, S2 = P + (high_val - low_val), P - (high_val - low_val)
-        
-        if risk_profile == "CONSERVATIVE (ต่ำ)": tp_f, sl_f = 0.02, 0.01
-        elif risk_profile == "MODERATE (ปานกลาง)": tp_f, sl_f = 0.045, 0.022
-        else: tp_f, sl_f = 0.08, 0.04
-        
-        entry_min, entry_max = S1, current_price * 1.002
-        tp_price, sl_price = current_price * (1 + tp_f), current_price * (1 - sl_f)
-        
-        try:
-            expirations = cm["stock"].options
-            calls_iv = cm["stock"].option_chain(expirations[0]).calls['impliedVolatility'].mean() * 100 if expirations else 32.4
-            iv_status = f"{calls_iv:.1f}%"
-        except: iv_status = "32.4%"
-        
-        # แสดงผลพิกัดราคาเป้าหมายกลยุทธ์ซื้อขายของหุ้นตัวที่ถูกเลือกทันที!
-        st.markdown(f"<div class='badge-zone zone-buy'>📍 Entry: {entry_min:,.2f} - {entry_max:,.2f}</div>", unsafe_allow_html=True)
-        st.markdown(f"<div class='badge-zone zone-tp'>🎯 Target TP: {tp_price:,.2f}</div>", unsafe_allow_html=True)
-        st.markdown(f"<div class='badge-zone zone-sl'>🛑 Risk SL: {sl_price:,.2f}</div>", unsafe_allow_html=True)
-        
-        st.write("")
-        sr_table = {
-            "ระดับเทคนิค": ["แนวต้าน (R2)", "แนวต้าน (R1)", "ศูนย์ดุล (Pivot)", "แนวรับ (S1)", "แนวรับ (S2)"],
-            "พิกัดราคา": [f"{R2:,.2f}", f"{R1:,.2f}", f"{P:,.2f}", f"{S1:,.2f}", f"{S2:,.2f}"]
-        }
-        st.table(pd.DataFrame(sr_table).set_index("ระดับเทคนิค"))
-        
-        st.markdown(f"""
-        <div style='font-size:11px; background-color:{bg_app}; padding:10px; border-radius:6px; border:1px solid {border_color}; line-height:1.4;'>
-        • <strong>Implied Volatility (IV):</strong> {iv_status}<br>
-        • 🟢 <strong>CALL TRIGGER:</strong> เหนือ {R1:,.2f}<br>
-        • 🔴 <strong>PUT TRIGGER:</strong> หลุดต่ำกว่า {S1:,.2f}
-        </div>
-        """, unsafe_allow_html=True)
+        # [FIXED] ดึงโหมดความเสี่ยงจากสถานะปัจจุบันอย่างปลอดภัย
+        current_risk = cm.get("risk_
