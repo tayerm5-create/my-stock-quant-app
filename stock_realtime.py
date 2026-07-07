@@ -161,7 +161,12 @@ with main_col:
                     fig.update_layout(template="plotly_dark", xaxis_rangeslider_visible=False, paper_bgcolor='#131722', plot_bgcolor='#131722', margin=dict(l=8, r=8, t=8, b=8), height=480, showlegend=False)
                     fig.update_yaxes(gridcolor='#1e222d', zerolinecolor='#1e222d')
                     fig.update_xaxes(gridcolor='#1e222d')
-                    st.plotly_chart(fig, use_container_width=True)
+                    st.markdown(f"""
+* 💠 **IMPLIED VOLATILITY (IV) MATRIX:** <span style='color:#FFD600; font-weight:bold;'>{iv_status}</span>
+* 💡 **QUANT ADVICE:** *{iv_advice}*
+* 🟢 **BULLISH CALL TRIGGER:** เปิดสถานะ **CALL** เมื่อราคาตัดผ่านสถิติเหนือ **{R1:,.2f}**
+* 🔴 **BEARISH PUT TRIGGER:** เปิดสถานะ **PUT** เมื่อราคาหลุดกรอบโครงสร้างล่าง **{S1:,.2f}**
+""", unsafe_allow_html=True)
                     
                     # --- Mathematical Quant Matrix ---
                     P = (high_val + low_val + current_price) / 3
