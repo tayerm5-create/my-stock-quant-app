@@ -92,7 +92,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # 4. Header Bar
-st.markdown(f"<div style='display: flex; align-items: center; justify-content: space-between; margin-top: -30px; border-bottom: 1px solid {border_color}; padding-bottom: 6px;'><div style='display:flex; align-items:center;'><h3 style='color: {text_main}; font-weight:900; letter-spacing:-0.5px; margin: 0;'>📊 NEXUS QUANT</h3><span style='background-color: {border_color}; color: {text_sub}; padding: 2px 6px; border-radius: 4px; margin-left: 10px; font-size: 9px; font-weight: 700;'>INTELLIGENT TERMINAL v28.0</span></div><div style='font-size:11px; color:{text_sub};'><span class='pulse-beacon'></span>QUANT DATASTREAM CONNECTED</div></div>", unsafe_allow_html=True)
+st.markdown(f"<div style='display: flex; align-items: center; justify-content: space-between; margin-top: -30px; border-bottom: 1px solid {border_color}; padding-bottom: 6px;'><div style='display:flex; align-items:center;'><h3 style='color: {text_main}; font-weight:900; letter-spacing:-0.5px; margin: 0;'>📊 NEXUS QUANT</h3><span style='background-color: {border_color}; color: {text_sub}; padding: 2px 6px; border-radius: 4px; margin-left: 10px; font-size: 9px; font-weight: 700;'>INTELLIGENT TERMINAL v29.0</span></div><div style='font-size:11px; color:{text_sub};'><span class='pulse-beacon'></span>QUANT DATASTREAM CONNECTED</div></div>", unsafe_allow_html=True)
 st.write("")
 
 # 5. Top Menu Control Panel
@@ -272,7 +272,6 @@ with col_right_main:
             st.markdown(f"<div class='section-title' style='margin-top:12px; margin-bottom: 2px;'>📊 {long_name} SENTIMENT RADAR: {sentiment_pct:.1f}%</div>", unsafe_allow_html=True)
             st.markdown(f"<div class='sentiment-container'><div class='sentiment-bar' style='width: {sentiment_pct}%;'></div></div>", unsafe_allow_html=True)
             
-            # --- 📊 สเกล subplot ชาร์ตราคาหลัก ---
             fig = make_subplots(rows=2, cols=1, shared_xaxes=True, row_heights=[0.80, 0.20], vertical_spacing=0.02)
             
             fig.add_trace(go.Candlestick(
@@ -281,8 +280,6 @@ with col_right_main:
                 decreasing=dict(line=dict(color='#FF5252', width=1.5), fillcolor='#FF5252')
             ), row=1, col=1)
             
-            # ── 🟢 [NEW FEATURE] เพิ่มเส้นแนวนอนตามตำแหน่งราคาปัจจุบัน (Live Price Line Modifier) ──
-            # เส้นประหนาขึ้นสีน้ำเงินสว่างเรืองแสง วิ่งตัดขวางชาร์ตแท่งเทียนบอกพิกัดราคาปัจจุบันแบบวินาทีต่อวินาที
             fig.add_hline(
                 y=current_price, 
                 line_dash="dot", 
@@ -305,13 +302,16 @@ with col_right_main:
                 plot_bgcolor=bg_card, 
                 margin=dict(l=4, r=4, t=4, b=4), 
                 height=490, 
-                showlegend=False
+                showlegend=False,
+                # ── 🎯 [CRITICAL CHANGE] ปรับแต่ง dragmode เป็น 'pan' เพื่อเปิดระบบ "คลิกเมาส์ค้างเพื่อลากเลื่อนกราฟ" ──
+                dragmode='pan'
             )
             
+            # ปลดล็อกแกนคงที่ (fixedrange=False) ทั้งแนวตั้งและแนวนอน เพื่อรองรับการซูมและลากสไลด์ ซ้าย-ขวา / ขึ้น-ลง
             fig.update_yaxes(gridcolor='#1F222E', zerolinecolor='#2A2E39', fixedrange=False, linewidth=1)
             fig.update_xaxes(gridcolor='#1F222E', fixedrange=False, linewidth=1)
             
-            # เรนเดอร์ชาร์ตพ่วงคอนฟิก Scroll ซูมเข้าออกด้วยลูกกลิ้งเมาส์
+            # สั่งเรนเดอร์ชาร์ตพ่วงคอนฟิกเปิดระบบขยับด้วยเมาส์ Scroll
             st.plotly_chart(fig, use_container_width=True, config={'scrollZoom': True, 'displayModeBar': True})
             
             st.write("---")
