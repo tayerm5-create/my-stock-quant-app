@@ -92,7 +92,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # 4. Header Bar
-st.markdown(f"<div style='display: flex; align-items: center; justify-content: space-between; margin-top: -30px; border-bottom: 1px solid {border_color}; padding-bottom: 6px;'><div style='display:flex; align-items:center;'><h3 style='color: {text_main}; font-weight:900; letter-spacing:-0.5px; margin: 0;'>📊 NEXUS QUANT</h3><span style='background-color: {border_color}; color: {text_sub}; padding: 2px 6px; border-radius: 4px; margin-left: 10px; font-size: 9px; font-weight: 700;'>INTELLIGENT TERMINAL v27.0</span></div><div style='font-size:11px; color:{text_sub};'><span class='pulse-beacon'></span>QUANT DATASTREAM CONNECTED</div></div>", unsafe_allow_html=True)
+st.markdown(f"<div style='display: flex; align-items: center; justify-content: space-between; margin-top: -30px; border-bottom: 1px solid {border_color}; padding-bottom: 6px;'><div style='display:flex; align-items:center;'><h3 style='color: {text_main}; font-weight:900; letter-spacing:-0.5px; margin: 0;'>📊 NEXUS QUANT</h3><span style='background-color: {border_color}; color: {text_sub}; padding: 2px 6px; border-radius: 4px; margin-left: 10px; font-size: 9px; font-weight: 700;'>INTELLIGENT TERMINAL v28.0</span></div><div style='font-size:11px; color:{text_sub};'><span class='pulse-beacon'></span>QUANT DATASTREAM CONNECTED</div></div>", unsafe_allow_html=True)
 st.write("")
 
 # 5. Top Menu Control Panel
@@ -146,7 +146,7 @@ with col_left_scan:
         "🌐 Technology (เทคโนโลยี/AI)": ["NVDA", "AAPL", "MSFT", "AMD", "AVGO", "DELTA.BK"],
         "🏥 Healthcare (การแพทย์/ยา)": ["LLY", "JNJ", "MRK", "PFE", "BDMS.BK", "BH.BK"],
         "💳 Financials (การเงิน/ธนาคาร)": ["JPM", "BAC", "WFC", "GS", "KBANK.BK", "SCB.BK"],
-        "🛍️ Consumer Cyclical (สินค้าฟุ่มเฟือย)": ["TSLA", "AMZN", "HD", "MCD", "NKE", "CPALL.BK"],
+        "🛍️ Consumer Cyclical (สินค้าฟุ่มเฟือย)": ["TSLA", "AMZN", "HD", "MCD", "NKE", "LOW", "SBUX"],
         "🍞 Consumer Defensive (สินค้าจำเป็น)": ["PG", "WMT", "COST", "KO", "PEP", "CPF.BK"],
         "⚡ Energy (พลังงาน/น้ำมัน)": ["XOM", "CVX", "SHEL", "COP", "PTT.BK", "PTTEP.BK"],
         "🏭 Industrials (อุตสาหกรรม/บิน)": ["GE", "CAT", "HON", "BA", "LMT", "AOT.BK"],
@@ -272,7 +272,7 @@ with col_right_main:
             st.markdown(f"<div class='section-title' style='margin-top:12px; margin-bottom: 2px;'>📊 {long_name} SENTIMENT RADAR: {sentiment_pct:.1f}%</div>", unsafe_allow_html=True)
             st.markdown(f"<div class='sentiment-container'><div class='sentiment-bar' style='width: {sentiment_pct}%;'></div></div>", unsafe_allow_html=True)
             
-            # --- 🛠️ [ADAPTIVE MODIFIER] ปรับความหนาเส้น เพิ่มความคมชัดสูง และปลดล็อกแกนอิสระเพื่อรองรับเมาส์ Scroll ซูม ---
+            # --- 📊 สเกล subplot ชาร์ตราคาหลัก ---
             fig = make_subplots(rows=2, cols=1, shared_xaxes=True, row_heights=[0.80, 0.20], vertical_spacing=0.02)
             
             fig.add_trace(go.Candlestick(
@@ -281,7 +281,20 @@ with col_right_main:
                 decreasing=dict(line=dict(color='#FF5252', width=1.5), fillcolor='#FF5252')
             ), row=1, col=1)
             
-            fig.add_trace(go.Scatter(x=hist_chart_converted.index, y=hist_chart_converted['RSI'], line=dict(color='#FFD600', width=1.4)), row=2, col=1)
+            # ── 🟢 [NEW FEATURE] เพิ่มเส้นแนวนอนตามตำแหน่งราคาปัจจุบัน (Live Price Line Modifier) ──
+            # เส้นประหนาขึ้นสีน้ำเงินสว่างเรืองแสง วิ่งตัดขวางชาร์ตแท่งเทียนบอกพิกัดราคาปัจจุบันแบบวินาทีต่อวินาที
+            fig.add_hline(
+                y=current_price, 
+                line_dash="dot", 
+                line_color="#2962FF", 
+                line_width=1.8, 
+                annotation_text=f" Current: {current_price:,.2f}", 
+                annotation_position="top right",
+                annotation_font=dict(size=10, color="#2962FF", family="Inter"),
+                row=1, col=1
+            )
+            
+            fig.add_trace(go.Scatter(x=hist_chart_converted.index, y=hist_chart_converted['RSI'], line=dict(color='#FFD600', width=1.1)), row=2, col=1)
             fig.add_hline(y=70, line_dash="dash", line_color="#FF5252", line_width=1.2, row=2, col=1)
             fig.add_hline(y=30, line_dash="dash", line_color="#00E676", line_width=1.2, row=2, col=1)
             
@@ -291,15 +304,14 @@ with col_right_main:
                 paper_bgcolor=bg_app, 
                 plot_bgcolor=bg_card, 
                 margin=dict(l=4, r=4, t=4, b=4), 
-                height=490, # ขยายความสูงเพิ่มความชัดเจนเต็มสเกล
+                height=490, 
                 showlegend=False
             )
             
-            # ปรับเส้นกริดให้สีเข้มนำสายตา และตั้งค่า fixedrange=False เพื่อให้ซูมเข้าออกได้อย่างอิสระ
             fig.update_yaxes(gridcolor='#1F222E', zerolinecolor='#2A2E39', fixedrange=False, linewidth=1)
             fig.update_xaxes(gridcolor='#1F222E', fixedrange=False, linewidth=1)
             
-            # ── [CRITICAL RULE] ยัดคอนฟิก 'scrollZoom': True ลงในคำสั่งเรนเดอร์เพื่อให้ขยับซูมด้วยลูกกลิ้งเมาส์ได้ ──
+            # เรนเดอร์ชาร์ตพ่วงคอนฟิก Scroll ซูมเข้าออกด้วยลูกกลิ้งเมาส์
             st.plotly_chart(fig, use_container_width=True, config={'scrollZoom': True, 'displayModeBar': True})
             
             st.write("---")
@@ -333,8 +345,8 @@ with col_right_main:
                 <div style='background-color:rgba(0, 230, 118, 0.03); border: 1px dashed rgba(0, 230, 118, 0.2); padding: 10px 14px; border-radius: 4px; font-size:11px; line-height:1.55; height: 116px;'>
                 🧮 <b>RISK MANAGEMENT PLAN</b><br>
                 • จำนวนเข้าซื้อแนะนำ: <span style='color:#00E676; font-weight:bold;'>{shares_to_buy:,} หุ้น</span><br>
-                • มูลค่าไม้ลงทุนรวม: {total_investment:,.2f} {display_currency}<br>
-                • แผนจำกัดขาดทุนสูงสุด: {allowed_loss:,.2f} {display_currency} ({risk_percent}%)
+                • เงินลงทุนรวม: {total_investment:,.2f} {display_currency}<br>
+                • เสียหายเมื่อชน SL: {allowed_loss:,.2f} {display_currency} ({risk_percent}%)
                 </div>
                 """, unsafe_allow_html=True)
                 
