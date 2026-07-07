@@ -7,10 +7,10 @@ from plotly.subplots import make_subplots
 from concurrent.futures import ThreadPoolExecutor
 import time
 
-# 1. Page Configuration
+# 1. Page Configuration (เปลี่ยนชื่อ Title บนแท็บเบราว์เซอร์ให้ทันสมัย)
 st.set_page_config(
-    page_title="ALPHA TERMINAL // STRATEGIC BUNDLE",
-    page_icon="⚡",
+    page_title="NEXUS QUANT // TERMINAL",
+    page_icon="📊",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
@@ -91,8 +91,8 @@ st.markdown(f"""
     </style>
 """, unsafe_allow_html=True)
 
-# 4. Header Bar
-st.markdown(f"<div style='display: flex; align-items: center; justify-content: space-between; margin-top: -30px; border-bottom: 1px solid {border_color}; padding-bottom: 6px;'><div style='display:flex; align-items:center;'><h3 style='color: {text_main}; font-weight:900; letter-spacing:-0.5px; margin: 0;'>⚡ ALPHA ENGINE</h3><span style='background-color: {border_color}; color: {text_sub}; padding: 2px 6px; border-radius: 4px; margin-left: 10px; font-size: 9px; font-weight: 700;'>QUANT CORE v23.0</span></div><div style='font-size:11px; color:{text_sub};'><span class='pulse-beacon'></span>ANTI-RATE LIMIT LAYER ACTIVE</div></div>", unsafe_allow_html=True)
+# 4. Re-Branded Header Bar (เปลี่ยนชื่อแบรนด์เป็น NEXUS QUANT และเปลี่ยนโลโก้เป็น 📈)
+st.markdown(f"<div style='display: flex; align-items: center; justify-content: space-between; margin-top: -30px; border-bottom: 1px solid {border_color}; padding-bottom: 6px;'><div style='display:flex; align-items:center;'><h3 style='color: {text_main}; font-weight:900; letter-spacing:-0.5px; margin: 0;'>📈 NEXUS QUANT</h3><span style='background-color: {border_color}; color: {text_sub}; padding: 2px 6px; border-radius: 4px; margin-left: 10px; font-size: 9px; font-weight: 700;'>INTELLIGENT TERMINAL v24.0</span></div><div style='font-size:11px; color:{text_sub};'><span class='pulse-beacon'></span>QUANT DATASTREAM CONNECTED</div></div>", unsafe_allow_html=True)
 st.write("")
 
 # 5. Top Menu Control Panel
@@ -140,7 +140,6 @@ with col_left_scan:
         "💧 Utilities (ไฟฟ้า/ประปา)", "📞 Communication Services (สื่อสาร/บันเทิง)"
     ], label_visibility="collapsed")
     
-    # บีบรายชื่อหุ้นในคลังลงเหลือ 6 ตัวต่อกลุ่ม เพื่อลดจำนวนครั้งในการยิงดึงข้อมูล ป้องกัน Rate limit ขาดสาย
     sector_database = {
         "🌐 Technology (เทคโนโลยี/AI)": ["NVDA", "AAPL", "MSFT", "AMD", "AVGO", "DELTA.BK"],
         "🏥 Healthcare (การแพทย์/ยา)": ["LLY", "JNJ", "MRK", "PFE", "BDMS.BK", "BH.BK"],
@@ -163,10 +162,9 @@ with col_left_scan:
 
     current_watchlist = sector_database[selected_sector]
     
-    # ── [ADAPTIVE LAYER] ฟังก์ชันย่อยสำหรับสแกนเนอร์ พร้อมระบบหน่วงความเร็ว 0.1 วินาทีกันโดนบล็อก ──
     def fetch_single_scanner_data(t):
         try:
-            time.sleep(0.1) # หน่วงจังหวะการยิงสั้นๆ ไม่ให้เซิร์ฟเวอร์ Yahoo ปฏิเสธการเชื่อมต่อ
+            time.sleep(0.1) 
             s = yf.Ticker(t)
             h = s.history(period="5d")
             if not h.empty:
@@ -176,11 +174,10 @@ with col_left_scan:
                 return {"TICKER": t, "WINRATE": sim_win, "PRICE": close_val}
         except: return None
 
-    # ยืดอายุแคชข้อมูลเป็น 30 นาที (1800 วินาที) เพื่อเซฟแอปไม่ให้ล่ม
     @st.cache_data(ttl=1800)
     def scan_sector_leaderboard(tickers):
         results = []
-        with ThreadPoolExecutor(max_workers=3) as executor: # บีบจำนวน Thread ให้โหลดนิ่มนวลขึ้น
+        with ThreadPoolExecutor(max_workers=3) as executor:
             task_outputs = executor.map(fetch_single_scanner_data, tickers)
             for output in task_outputs:
                 if output is not None: results.append(output)
@@ -202,7 +199,7 @@ with col_left_scan:
             with r_col3: st.markdown(f"<span class='winrate-pill'>{row['WINRATE']:.1f}%</span>", unsafe_allow_html=True)
             st.markdown("</div>", unsafe_allow_html=True)
     else:
-        st.warning("⚠️ Yahoo จำกัดสัญญาณชั่วคราว ข้อมูลฝั่งนี้จะแสดงใน 1-2 นาที กรุณากดเลือกหุ้นด้านล่างหรือพิมพ์ค้นหาได้ทันที")
+        st.warning("⚠️ ข้อมูลระบบคัดกรองกำลังประมวลผลดึงค่า Cache ชั่วคราว...")
 
 active_ticker = st.session_state['selected_ticker']
 
@@ -212,14 +209,13 @@ with col_center_chart:
         stock = yf.Ticker(active_ticker)
         cfg = timeframe_map[timeframe_choice]
         
-        # เพิ่มระบบ Safe Fallback เผื่อกรอบเวลาสั้นพัง ให้ถอยมาใช้ประวัติรายวันทันที
         hist_chart = stock.history(period=cfg["period"], interval=cfg["interval"])
         if hist_chart.empty:
             hist_chart = stock.history(period="1mo", interval="1d")
             
         hist_5d = stock.history(period="5d")
         if hist_5d.empty:
-            st.error(f"🚨 เซิร์ฟเวอร์หลักปฏิเสธสัญญาณตัวหุ้น {active_ticker} โปรดรอ 1-2 นาทีแล้วกดปุ่มรันใหม่อีกครั้ง")
+            st.error(f"🚨 เซิร์ฟเวอร์หลักหน่วงสัญญาณตัวหุ้น {active_ticker} โปรดกดเลือกหุ้นตัวอื่นสลับไปมาเพื่อปลดล็อก")
         else:
             info = stock.info
             native_curr = info.get('currency', 'USD')
@@ -292,7 +288,7 @@ with col_center_chart:
                 "high_val": high_val, "low_val": low_val, "current_price": current_price, 
                 "stock": stock, "display_currency": display_currency, "risk_profile": risk_profile
             }
-    except Exception as e: st.error(f"⚠️ สัญญาณหน่วงชั่วคราว โปรดกดเลือกหุ้นตัวอื่นสลับไปมาก่อนเพื่อรีเฟรช")
+    except Exception as e: st.error(f"⚠️ สัญญาณจำกัดจาก Yahoo ชั่วคราว ข้อมูลชาร์ตจะเรนเดอร์กลับมาในรอบสั้น")
 
 # --- 🎯 ฝั่งที่ 3: แผงสูตรคำนวณและ Risk/Position Calculator (Right Column) ---
 with col_right_matrix:
@@ -366,4 +362,4 @@ with col_right_matrix:
             use_container_width=True
         )
     else:
-        st.caption("ระบบคำนวณพร้อมเสิร์ฟพิกัดราคาเมื่อสัญญาณปลดล็อกกรอบเวลา")
+        st.caption("ระบบคำนวณพร้อมเสิร์ฟพิกัดราคาเมื่อเลือกรายชื่อหุ้นหลักด้านซ้าย")
