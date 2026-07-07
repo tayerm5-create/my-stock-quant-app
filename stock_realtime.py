@@ -282,4 +282,40 @@ with col_right_matrix:
         high_val, low_val, current_price, display_currency = cm["high_val"], cm["low_val"], cm["current_price"], cm["display_currency"]
         
         # [FIXED] ดึงโหมดความเสี่ยงจากสถานะปัจจุบันอย่างปลอดภัย
-        current_risk = cm.get("risk_
+        current_risk = cm.get("risk_profile", risk_profile)
+        
+        P = (high_val + low_val + current_price) / 3
+        R1, S1 = (2 * P) - low_val, (2 * P) - high_val
+        R2, S2 = P + (high_val - low_val), P - (high_val - low_val)
+        
+        if current_risk == "CONSERVATIVE (ต่ำ)": tp_f, sl_f = 0.02, 0.01
+        elif current_risk == "MODERATE (ปานกลาง)": tp_f, sl_f = 0.045, 0.022
+        else: tp_f, sl_f = 0.08, 0.04
+        
+        entry_min, entry_max = S1, current_price * 1.002
+        tp_price, sl_price = current_price * (1 + tp_f), current_price * (1 - sl_f)
+        
+        try:
+            expirations = cm["stock"].options
+            calls_iv = cm["stock"].option_chain(expirations[0]).calls['impliedVolatility'].mean() * 100 if expirations else 32.4
+            iv_status = f"{calls_iv:.1f}%"
+        except: iv_status = "32.4%"
+        
+        st.markdown(f"<div class='badge-zone zone-buy'>📍 Entry: {entry_min:,.2f} - {entry_max:,.2f}</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='badge-zone zone-tp'>🎯 Target TP: {tp_price:,.2f}</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='badge-zone zone-sl'>🛑 Risk SL: {sl_price:,.2f}</div>", unsafe_allow_html=True)
+        
+        st.write("")
+        sr_table = {
+            "ระดับเทคนิค": ["แนวต้าน (R2)", "แนวต้าน (R1)", "ศูนย์ดุล (Pivot)", "แนวรับ (S1)", "แนวรับ (S2)"],
+            "พิกัดราคา": [f"{R2:,.2f}", f"{R1:,.2f}", f"{P:,.2f}", f"{S1:,.2f}", f"{S2:,.2f}"]
+        }
+        st.table(pd.DataFrame(sr_table).set_index("ระดับเทคนิค"))
+        
+        st.markdown(f"""
+        <div style='font-size:11px; background-color:{bg_app}; padding:10px; border-radius:6px; border:1px solid {border_color}; line-height:1.4;'>
+        • <strong>Implied Volatility (IV):</strong> {iv_status}<br>
+        • 🟢 <strong>CALL TRIGGER:</strong> เหนือ {R1:,.2f}<br>
+        • 🔴 <strong>PUT TRIGGER:</strong> หลุดต่ำกว่า {S1:,.2f}
+        </div>
+        """, unsafe_allow_html=True)
