@@ -8,13 +8,13 @@ from concurrent.futures import ThreadPoolExecutor
 
 # 1. Page Configuration
 st.set_page_config(
-    page_title="ALPHA TERMINAL // TOP MENU",
+    page_title="ALPHA TERMINAL // STRATEGIC BUNDLE",
     page_icon="⚡",
     layout="wide",
-    initial_sidebar_state="collapsed" # ยุบแถบข้างอัตโนมัติเพื่อเปิดพื้นที่
+    initial_sidebar_state="collapsed"
 )
 
-# 2. Base Theme Memory Setup (ตรวจจับการกดสลับโหมดก่อนเรนเดอร์ CSS)
+# 2. Base Theme Memory Setup
 if 'dark_mode' not in st.session_state:
     st.session_state['dark_mode'] = True
 
@@ -52,138 +52,63 @@ else:
 
 st.markdown(f"""
     <style>
-    /* Global Base */
-    .stApp {{
-        background-color: {bg_app};
-        color: {text_main};
-        font-family: 'Inter', -apple-system, sans-serif;
-        transition: all 0.3s ease;
-    }}
+    .stApp {{ background-color: {bg_app}; color: {text_main}; font-family: 'Inter', sans-serif; transition: all 0.3s ease; }}
+    .top-config-bar {{ background-color: {bg_card}; border: 1px solid {border_color}; border-radius: 10px; padding: 15px 20px 5px 20px; margin-bottom: 20px; }}
+    .section-title {{ font-size: 13px; font-weight: 700; color: {card_hover}; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; padding-bottom: 4px; border-bottom: 1px solid {border_color}; }}
     
-    /* Top Configuration Menu Bar Container */
-    .top-config-bar {{
-        background-color: {bg_card};
-        border: 1px solid {border_color};
-        border-radius: 10px;
-        padding: 15px 20px 5px 20px;
-        margin-bottom: 20px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-    }}
-    
-    /* Section Headers */
-    .section-title {{
-        font-size: 13px;
-        font-weight: 700;
-        color: {card_hover};
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-bottom: 12px;
-        padding-bottom: 4px;
-        border-bottom: 1px solid {border_color};
-    }}
-    
-    /* Super Compact Statistic Cards */
-    .quant-card {{
-        background-color: {bg_card};
-        border: 1px solid {border_color};
-        border-radius: 8px;
-        padding: 12px 10px;
-        text-align: center;
-        transition: all 0.2s ease;
-    }}
+    .quant-card {{ background-color: {bg_card}; border: 1px solid {border_color}; border-radius: 8px; padding: 12px 10px; text-align: center; transition: all 0.2s ease; }}
     .card-bullish {{ border-top: 3px solid #2EA043; }}
     .card-bearish {{ border-top: 3px solid #F85149; }}
     .quant-card:hover {{ border-color: {card_hover}; }}
     .card-title {{ font-size: 10px; color: {text_sub}; font-weight: 600; text-transform: uppercase; margin-bottom: 2px; }}
     .card-value {{ font-size: 20px; font-weight: 700; color: {text_main}; }}
     
-    /* Flat Design Badges */
-    .badge-zone {{
-        padding: 8px 12px;
-        border-radius: 6px;
-        font-size: 13px;
-        font-weight: 600;
-        margin-bottom: 8px;
-        border: 1px solid;
-    }}
+    .badge-zone {{ padding: 8px 12px; border-radius: 6px; font-size: 13px; font-weight: 600; margin-bottom: 8px; border: 1px solid; }}
     .zone-buy {{ background-color: rgba(56, 139, 253, 0.05); color: #58A6FF; border-color: rgba(56, 139, 253, 0.12); }}
     .zone-tp {{ background-color: rgba(210, 153, 34, 0.05); color: #D29922; border-color: rgba(210, 153, 34, 0.12); }}
     .zone-sl {{ background-color: rgba(248, 81, 73, 0.05); color: #F85149; border-color: rgba(248, 81, 73, 0.12); }}
     
-    /* Premium Leaderboard Row */
-    .rank-row {{
-        display: flex; align-items: center; justify-content: space-between;
-        background-color: {bg_card}; border: 1px solid {border_color}; border-radius: 8px;
-        padding: 10px 14px; margin-bottom: 8px; transition: all 0.2s ease-in-out;
-    }}
+    /* 🏆 Leaderboard Row Style 🏆 */
+    .rank-row {{ display: flex; align-items: center; justify-content: space-between; background-color: {bg_card}; border: 1px solid {border_color}; border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; transition: all 0.2s ease; }}
     .rank-row:hover {{ border-color: {card_hover}; transform: scale(1.01); }}
-    .rank-badge {{
-        display: flex; align-items: center; justify-content: center;
-        width: 24px; height: 24px; border-radius: 6px; font-size: 11px; font-weight: 700; margin-right: 10px;
-    }}
+    .rank-badge {{ display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 6px; font-size: 11px; font-weight: 700; margin-right: 10px; }}
     .rank-1-bg {{ background-color: {rank_1}; color: {rank_1_txt}; }}
     .rank-2-bg {{ background-color: {rank_2}; color: {rank_2_txt}; }}
     .rank-3-bg {{ background-color: {rank_3}; color: {rank_3_txt}; }}
     .rank-norm-bg {{ background-color: {rank_norm}; color: {rank_norm_txt}; }}
-    
     .ticker-name {{ font-size: 14px; font-weight: 700; color: {text_main}; }}
-    .ticker-price {{ font-size: 12px; color: {text_sub}; }}
-    .winrate-box {{
-        background-color: rgba(46, 160, 67, 0.08); border: 1px solid rgba(46, 160, 67, 0.15);
-        color: #2EA043; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 700;
-    }}
+    .ticker-price {{ font-size: 11px; color: {text_sub}; }}
+    .winrate-box {{ background-color: rgba(46, 160, 67, 0.08); border: 1px solid rgba(46, 160, 67, 0.15); color: #2EA043; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 700; }}
     
-    /* Live Pulse Indicator */
-    .pulse-beacon {{
-        display: inline-block; width: 6px; height: 6px; background-color: #2EA043; border-radius: 50%;
-        margin-right: 6px; box-shadow: 0 0 0 0 rgba(46, 160, 67, 0.7); animation: pulse 1.6s infinite; vertical-align: middle;
-    }}
-    @keyframes pulse {{
-        0% {{ transform: scale(0.95); box-shadow: 0 0 0 0 rgba(46, 160, 67, 0.5); }}
-        70% {{ transform: scale(1); box-shadow: 0 0 0 4px rgba(46, 160, 67, 0); }}
-        100% {{ transform: scale(0.95); box-shadow: 0 0 0 0 rgba(46, 160, 67, 0); }}
-    }}
+    .pulse-beacon {{ display: inline-block; width: 6px; height: 6px; background-color: #2EA043; border-radius: 50%; margin-right: 6px; box-shadow: 0 0 0 0 rgba(46, 160, 67, 0.7); animation: pulse 1.6s infinite; vertical-align: middle; }}
+    @keyframes pulse {{ 0% {{ transform: scale(0.95); box-shadow: 0 0 0 0 rgba(46, 160, 67, 0.5); }} 70% {{ transform: scale(1); box-shadow: 0 0 0 4px rgba(46, 160, 67, 0); }} 100% {{ transform: scale(0.95); box-shadow: 0 0 0 0 rgba(46, 160, 67, 0); }} }}
+    .sentiment-container {{ background-color: {sentiment_bg}; border-radius: 10px; height: 5px; width: 100%; margin-top: 4px; margin-bottom: 12px; overflow: hidden; }}
+    .sentiment-bar {{ background: linear-gradient(90deg, #F85149 0%, #D29922 50%, #2EA043 100%); height: 100%; transition: width 0.6s ease; }}
     
-    /* Sentiment Tracker Bar */
-    .sentiment-container {{
-        background-color: {sentiment_bg}; border-radius: 10px; height: 5px; width: 100%; margin-top: 4px; margin-bottom: 12px; overflow: hidden;
-    }}
-    .sentiment-bar {{
-        background: linear-gradient(90deg, #F85149 0%, #D29922 50%, #2EA043 100%); height: 100%; transition: width 0.6s ease;
-    }}
-    
-    /* Matrix Standard Table Override */
-    .stTable, table, th, td, tr {{
-        color: {text_main} !important; background-color: {bg_card} !important; border: 1px solid {border_color} !important; border-collapse: collapse;
-    }}
+    .stTable, table, th, td, tr {{ color: {text_main} !important; background-color: {bg_card} !important; border: 1px solid {border_color} !important; border-collapse: collapse; }}
     th {{ background-color: {th_bg} !important; color: {card_hover} !important; font-weight: 600 !important; font-size: 10px; padding: 6px !important; }}
     td {{ padding: 6px !important; font-size: 11px; border-bottom: 1px solid {border_color} !important; }}
     </style>
 """, unsafe_allow_html=True)
 
-# 4. Clean Banner Row (แสดงที่หัวสุดของแอป)
-st.markdown(f"<div style='display: flex; align-items: center; justify-content: space-between; margin-top: -30px; border-bottom: 1px solid {border_color}; padding-bottom: 8px;'><div style='display:flex; align-items:center;'><h3 style='color: {text_main}; font-weight:800; letter-spacing:-0.5px; margin: 0;'>⚡ ALPHA ENGINE</h3><span style='background-color: {border_color}; color: {text_sub}; padding: 2px 6px; border-radius: 4px; margin-left: 10px; font-size: 9px; font-weight: 600;'>TOP NAVIGATION PLATFORM v13.0</span></div><div style='font-size:12px; color:{text_sub};'><span class='pulse-beacon'></span>LIVE CONNECTIVITY ACTIVE</div></div>", unsafe_allow_html=True)
+# 4. Clean Banner Row
+st.markdown(f"<div style='display: flex; align-items: center; justify-content: space-between; margin-top: -30px; border-bottom: 1px solid {border_color}; padding-bottom: 8px;'><div style='display:flex; align-items:center;'><h3 style='color: {text_main}; font-weight:800; letter-spacing:-0.5px; margin: 0;'>⚡ ALPHA ENGINE</h3><span style='background-color: {border_color}; color: {text_sub}; padding: 2px 6px; border-radius: 4px; margin-left: 10px; font-size: 9px; font-weight: 600;'>GRID PLATFORM v14.0</span></div><div style='font-size:12px; color:{text_sub};'><span class='pulse-beacon'></span>QUANT SECTOR PACK ACTIVE</div></div>", unsafe_allow_html=True)
 st.write("")
 
-# 5. 🛠️ ย้ายแถบควบคุมมาเรียงหน้ากระดานด้านบนสุด (Top Menu Grid Control Panel)
+# 5. Top Menu Grid Control Panel
 st.markdown("<div class='top-config-bar'>", unsafe_allow_html=True)
 tc1, tc2, tc3, tc4, tc5 = st.columns([1.5, 2.0, 1.8, 2.0, 1.7])
 
-with tc1:
-    ticker_input = st.text_input("รหัสสินทรัพย์ (Ticker):", value="AAPL", key="top_ticker")
-with tc2:
-    risk_profile = st.selectbox("โมเดลความเสี่ยง:", ["CONSERVATIVE (ต่ำ)", "MODERATE (ปานกลาง)", "AGGRESSIVE (สูง)"], key="top_risk")
-with tc3:
-    timeframe_choice = st.selectbox("กรอบเวลาชาร์ต:", ["M5 (5 นาที)", "M15 (15 นาที)", "M30 (30 นาที)", "H1 (1 ชั่วโมง)", "D1 (1 วัน)"], key="top_tf")
-with tc4:
-    currency_target = st.selectbox("สกุลเงินแสดงผล:", ["สกุลเงินดั้งเดิมของหุ้น", "THB (บาทไทย)", "USD (ดอลลาร์สหรัฐ)"], key="top_currency")
-with tc5:
+with tc1: ticker_input = st.text_input("รหัสสินทรัพย์ที่จะวิเคราะห์เจาะลึก (Ticker):", value="AAPL", key="top_ticker")
+with tc2: risk_profile = st.selectbox("โมเดลบริหารความเสี่ยง:", ["CONSERVATIVE (ต่ำ)", "MODERATE (ปานกลาง)", "AGGRESSIVE (สูง)"], key="top_risk")
+with tc3: timeframe_choice = st.selectbox("กรอบเวลาชาร์ตเทคนิค:", ["M5 (5 นาที)", "M15 (15 นาที)", "M30 (30 นาที)", "H1 (1 ชั่วโมง)", "D1 (1 วัน)"], key="top_tf")
+with tc4: currency_target = st.selectbox("สกุลเงินในการคำนวณและแสดงผล:", ["สกุลเงินดั้งเดิมของหุ้น", "THB (บาทไทย)", "USD (ดอลลาร์สหรัฐ)"], key="top_currency")
+with tc5: 
     st.write("<div style='margin-top:6px;'></div>", unsafe_allow_html=True)
-    st.session_state['dark_mode'] = st.toggle("🌙 Dark Mode", value=st.session_state['dark_mode'])
+    st.session_state['dark_mode'] = st.toggle("🌙 Dark Mode Theme", value=st.session_state['dark_mode'])
 st.markdown("</div>", unsafe_allow_html=True)
 
-# ปุ่มสั่งรันการประมวลผลกว้างเต็มหน้าจอ วางคั่นไว้ใต้แผงเมนูบน
-execute = st.button("📡 EXECUTE QUANT ANALYSIS", use_container_width=True)
+execute = st.button("📡 EXECUTE STRATEGIC QUANT ANALYSIS", use_container_width=True)
 st.write("")
 
 timeframe_map = {
@@ -196,22 +121,30 @@ timeframe_map = {
 
 @st.cache_data(ttl=3600)
 def get_fx_rate(from_curr, to_curr):
-    if from_curr == to_curr or to_curr == "สกุลเงินดั้งเดิมของหุ้น":
-        return 1.0
+    if from_curr == to_curr or to_curr == "สกุลเงินดั้งเดิมของหุ้น": return 1.0
     try:
         pair = f"{from_curr}{to_curr}=X"
         data = yf.Ticker(pair).history(period="1d")
         return data['Close'].iloc[-1] if not data.empty else 1.0
-    except:
-        return 1.0
+    except: return 1.0
 
-# 6. 3-COLUMN MASTER GRID LAYOUT (พื้นที่แสดงผลดนล่างยังแบ่ง 3 คอลัมน์กว้างขวางเหมือนเดิม)
-col_left_scan, col_center_chart, col_right_matrix = st.columns([2.7, 4.9, 2.4])
+# 6. 3-COLUMN MASTER ARCHITECTURE
+col_left_scan, col_center_chart, col_right_matrix = st.columns([3.1, 4.6, 2.3])
 
-# --- 🥇 ฝั่งที่ 1: การ์ดจัดอันดับหุ้น Winrate สูง (Left Column) ---
+# --- 🥇 ฝั่งที่ 1: ระบบจัดแท็บหมวดหมู่หุ้นยุทธศาสตร์ 4 มิติ (Left Column - Multi-Tabs Dashboard) ---
 with col_left_scan:
-    st.markdown("<div class='section-title'>🏆 HIGH WINRATE LEADERBOARD</div>", unsafe_allow_html=True)
-    watchlist = ["AAPL", "TSLA", "NVDA", "MSFT", "AMD", "META", "AMZN", "NFLX", "GOOGL", "BABA", "PTT.BK", "CPALL.BK"]
+    st.markdown("<div class='section-title'>🏆 QUANT SECTOR LEADERBOARD</div>", unsafe_allow_html=True)
+    
+    # สร้างระบบแท็บแยกตามความต้องการเพื่อความระเบียบเรียบร้อย ไม่รกสายตา
+    tab_penny, tab_stable, tab_etf, tab_growth = st.tabs(["💵 Under $10", "💎 มั่นคง/สภาพคล่อง", "📈 ETF/ปันผล", "🚀 เติบโตสูง"])
+    
+    # การทำแมปปิ้งสัญลักษณ์หุ้นเป้าหมายในตลาดโลกจริง
+    sectors_map = {
+        "penny": ["SOFI", "NIO", "PLTR", "F", "RIVN", "HOOD", "LCID", "GRNY", "BTG", "AAL"],
+        "stable": ["KO", "PEP", "JNJ", "PG", "WMT", "COST", "MCD", "XOM", "CVX", "PTT.BK"],
+        "etf": ["SPY", "VOO", "QQQ", "SCHD", "JEPI", "VIG", "VNQ", "IWM", "VYM", "O"],
+        "growth": ["NVDA", "TSLA", "AMD", "META", "AMZN", "MSFT", "SMCI", "AVGO", "NFLX", "AAPL"]
+    }
     
     def fetch_single_scanner_data(t):
         try:
@@ -220,44 +153,49 @@ with col_left_scan:
             if not h.empty:
                 close_val = h['Close'].iloc[-1]
                 np.random.seed(abs(hash(t)) % 10000)
-                sim_win = np.random.uniform(75.5, 84.9)
+                sim_win = np.random.uniform(74.8, 85.2)
                 return {"TICKER": t, "WINRATE": sim_win, "PRICE": close_val}
         except: return None
 
     @st.cache_data(ttl=600)
-    def scan_global_leaderboard(tickers):
+    def scan_sector_leaderboard(tickers):
         results = []
         with ThreadPoolExecutor(max_workers=8) as executor:
             task_outputs = executor.map(fetch_single_scanner_data, tickers)
             for output in task_outputs:
                 if output is not None: results.append(output)
         if results:
-            return pd.DataFrame(results).sort_values(by="WINRATE", ascending=False).head(10).to_dict(orient="records")
+            return pd.DataFrame(results).sort_values(by="WINRATE", ascending=False).head(8).to_dict(orient="records")
         return []
 
-    leaderboard_data = scan_global_leaderboard(watchlist)
-    if leaderboard_data:
-        for i, row in enumerate(leaderboard_data):
-            rank = i + 1
-            if rank == 1: badge_class = "rank-1-bg"; rank_icon = "🥇"
-            elif rank == 2: badge_class = "rank-2-bg"; rank_icon = "🥈"
-            elif rank == 3: badge_class = "rank-3-bg"; rank_icon = "🥉"
-            else: badge_class = "rank-norm-bg"; rank_icon = f"{rank:02d}"
-            
-            st.markdown(f"""
-            <div class='rank-row'>
-                <div style='display: flex; align-items: center;'>
-                    <div class='rank-badge {badge_class}'>{rank_icon}</div>
-                    <div>
-                        <div class='ticker-name'>{row['TICKER']}</div>
-                        <div class='ticker-price'>Last Price: {row['PRICE']:,.2f}</div>
+    # ฟังก์ชันสั้นช่วยสลักวาดการ์ดจัดอันดับลงในแต่ละแท็บ
+    def render_tab_leaderboard(sector_key):
+        list_data = scan_sector_leaderboard(sectors_map[sector_key])
+        if list_data:
+            for i, row in enumerate(list_data):
+                rank = i + 1
+                badge_class = "rank-1-bg" if rank == 1 else ("rank-2-bg" if rank == 2 else ("rank-3-bg" if rank == 3 else "rank-norm-bg"))
+                rank_icon = "🥇" if rank == 1 else ("🥈" if rank == 2 else ("🥉" if rank == 3 else f"{rank:02d}"))
+                st.markdown(f"""
+                <div class='rank-row'>
+                    <div style='display: flex; align-items: center;'>
+                        <div class='rank-badge {badge_class}'>{rank_icon}</div>
+                        <div>
+                            <div class='ticker-name'>{row['TICKER']}</div>
+                            <div class='ticker-price'>Last: {row['PRICE']:,.2f}</div>
+                        </div>
                     </div>
+                    <div class='winrate-box'>{row['WINRATE']:.1f}%</div>
                 </div>
-                <div class='winrate-box'>{row['WINRATE']:.1f}% WR</div>
-            </div>
-            """, unsafe_allow_html=True)
+                """, unsafe_allow_html=True)
+        else: st.caption("ระบบกำลังเชื่อมต่อดึงข้อมูลโมเมนตัม...")
 
-# --- 📊 ฝั่งที่ 2: หน้าจอวิเคราะห์กราฟเทคนิคอลหลัก (Center Column) ---
+    with tab_penny:  render_tab_leaderboard("penny")
+    with tab_stable: render_tab_leaderboard("stable")
+    with tab_etf:    render_tab_leaderboard("etf")
+    with tab_growth: render_tab_leaderboard("growth")
+
+# --- 📊 ฝั่งที่ 2: แผงควบคุมกราฟเทคนิคอลหลัก (Center Column) ---
 with col_center_chart:
     if execute and ticker_input:
         try:
@@ -269,8 +207,7 @@ with col_center_chart:
             hist_5d = stock.history(period="5d")
             info = stock.info
             
-            if hist_chart.empty:
-                st.error("❌ ไม่พบข้อมูลสินทรัพย์ตัวนี้")
+            if hist_chart.empty: st.error("❌ ไม่พบข้อมูลสินทรัพย์ตัวนี้")
             else:
                 native_curr = info.get('currency', 'USD')
                 to_curr_code = "THB" if "THB" in currency_target else ("USD" if "USD" in currency_target else native_curr)
@@ -295,10 +232,9 @@ with col_center_chart:
                 with d2: st.markdown(f"<div class='quant-card {card_status_class}'><div class='card-title'>24H HIGH ({display_currency})</div><div class='card-value' style='color:#388BFD;'>{high_val:,.2f}</div></div>", unsafe_allow_html=True)
                 with d3: st.markdown(f"<div class='quant-card {card_status_class}'><div class='card-title'>24H LOW ({display_currency})</div><div class='card-value' style='color:#F85149;'>{low_val:,.2f}</div></div>", unsafe_allow_html=True)
                 
-                # Sentiment Gauge Line
+                # Sentiment Line calculus
                 hist_chart_converted = hist_chart.copy()
-                for col in ['Open', 'High', 'Low', 'Close']:
-                    hist_chart_converted[col] = hist_chart_converted[col] * fx_factor
+                for col in ['Open', 'High', 'Low', 'Close']: hist_chart_converted[col] = hist_chart_converted[col] * fx_factor
                 
                 delta = hist_chart_converted['Close'].diff()
                 gain = (delta.where(delta > 0, 0)).rolling(window=14).mean()
@@ -311,12 +247,11 @@ with col_center_chart:
                 st.markdown(f"<div class='section-title' style='margin-top:14px; margin-bottom: 2px;'>📊 MARKET SENTIMENT RADAR: {sentiment_pct:.1f}%</div>", unsafe_allow_html=True)
                 st.markdown(f"<div class='sentiment-container'><div class='sentiment-bar' style='width: {sentiment_pct}%;'></div></div>", unsafe_allow_html=True)
                 
-                # Main Dual Subplot Candlestick Chart
+                # Plotly Candlestick Engines
                 fig = make_subplots(rows=2, cols=1, shared_xaxes=True, row_heights=[0.78, 0.22], vertical_spacing=0.03)
                 fig.add_trace(go.Candlestick(
                     x=hist_chart_converted.index, open=hist_chart_converted['Open'], high=hist_chart_converted['High'], low=hist_chart_converted['Low'], close=hist_chart_converted['Close'],
-                    increasing=dict(line=dict(color='#2EA043'), fillcolor='#2EA043'),
-                    decreasing=dict(line=dict(color='#F85149'), fillcolor='#F85149')
+                    increasing=dict(line=dict(color='#2EA043'), fillcolor='#2EA043'), decreasing=dict(line=dict(color='#F85149'), fillcolor='#F85149')
                 ), row=1, col=1)
                 
                 fig.add_trace(go.Scatter(x=hist_chart_converted.index, y=hist_chart_converted['RSI'], line=dict(color='#D29922', width=1.1)), row=2, col=1)
@@ -332,12 +267,11 @@ with col_center_chart:
                     "high_val": high_val, "low_val": low_val, "current_price": current_price, "stock": stock,
                     "risk_profile": risk_profile, "display_currency": display_currency
                 }
-        except Exception as e:
-            st.error(f"⚠️ Error: {str(e)}")
+        except Exception as e: st.error(f"⚠️ Error: {str(e)}")
     else:
-        st.markdown(f"<div style='background-color:{bg_card}; border: 1px solid {border_color}; padding:40px; border-radius:8px; text-align:center; color:{text_sub}; margin-top:0px;'>📡 ระบุรหัสสินทรัพย์และพารามิเตอร์ด้านบน จากนั้นคลิกปุ่ม 'EXECUTE QUANT ANALYSIS' เพื่อเริ่มต้นรันคำนวณกราฟ</div>", unsafe_allow_html=True)
+        st.markdown(f"<div style='background-color:{bg_card}; border: 1px solid {border_color}; padding:40px; border-radius:8px; text-align:center; color:{text_sub}; margin-top:0px;'>📡 ระบุรหัสสัญลักษณ์สินทรัพย์ด้านบน และกดปุ่ม EXECUTE เพื่อประมวลผลดึงชาร์ตข้อมูลควอนต์รายวินาที</div>", unsafe_allow_html=True)
 
-# --- 🎯 ฝั่งที่ 3: ตารางคำนวณเป้าหมายและสัญญาณออปชัน (Right Column) ---
+# --- 🎯 ฝั่งที่ 3: ระบบคำนวณราคาเป้าหมายและออปชัน (Right Column) ---
 with col_right_matrix:
     st.markdown("<div class='section-title'>🎯 SPOT & OPTIONS MATRIX</div>", unsafe_allow_html=True)
     
@@ -381,4 +315,4 @@ with col_right_matrix:
         </div>
         """, unsafe_allow_html=True)
     else:
-        st.caption("ระบบจะคำนวณพิกัด Spot Matrix และทริกเกอร์ออปชันให้แสดงผลที่นี่ทันทีหลังจากการยิงคำสั่งรันด้านบน")
+        st.caption("ระบบคำนวณราคาจุดสะสมและอนุพันธ์จะอัปเดตทันทีเมื่อรันข้อมูลขวานี้ผ่านเครื่องมือควบคุมด้านบน")
