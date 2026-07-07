@@ -92,7 +92,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # 4. Header Bar
-st.markdown(f"<div style='display: flex; align-items: center; justify-content: space-between; margin-top: -30px; border-bottom: 1px solid {border_color}; padding-bottom: 6px;'><div style='display:flex; align-items:center;'><h3 style='color: {text_main}; font-weight:900; letter-spacing:-0.5px; margin: 0;'>📊 NEXUS QUANT</h3><span style='background-color: {border_color}; color: {text_sub}; padding: 2px 6px; border-radius: 4px; margin-left: 10px; font-size: 9px; font-weight: 700;'>INTELLIGENT TERMINAL v26.0</span></div><div style='font-size:11px; color:{text_sub};'><span class='pulse-beacon'></span>QUANT DATASTREAM CONNECTED</div></div>", unsafe_allow_html=True)
+st.markdown(f"<div style='display: flex; align-items: center; justify-content: space-between; margin-top: -30px; border-bottom: 1px solid {border_color}; padding-bottom: 6px;'><div style='display:flex; align-items:center;'><h3 style='color: {text_main}; font-weight:900; letter-spacing:-0.5px; margin: 0;'>📊 NEXUS QUANT</h3><span style='background-color: {border_color}; color: {text_sub}; padding: 2px 6px; border-radius: 4px; margin-left: 10px; font-size: 9px; font-weight: 700;'>INTELLIGENT TERMINAL v27.0</span></div><div style='font-size:11px; color:{text_sub};'><span class='pulse-beacon'></span>QUANT DATASTREAM CONNECTED</div></div>", unsafe_allow_html=True)
 st.write("")
 
 # 5. Top Menu Control Panel
@@ -129,7 +129,7 @@ def get_fx_rate(from_curr, to_curr):
 # 6. Grid Layout
 col_left_scan, col_right_main = st.columns([3.3, 6.7])
 
-# --- 🥇 ฝั่งที่ 1: แผงคัดกรองจัดกลุ่ม Sector 5 อันดับแรก (Left Column) ---
+# --- 🥇 ฝั่งที่ 1: แผงคัดกรองจัดกลุ่ม Sector (Left Column) ---
 with col_left_scan:
     st.markdown("<div class='section-title'>🗂️ INDUSTRY SECTOR SELECTOR</div>", unsafe_allow_html=True)
     
@@ -206,8 +206,7 @@ with col_left_scan:
 
 active_ticker = st.session_state['selected_ticker']
 
-# --- 📊 ฝั่งที่ 2: ชาร์ตหลักแบบขยายพื้นที่เต็มจอ พร้อม Matrix ด้านล่างกราฟ (Right Main Column) ---
-# [FIXED] ถอดโครงสร้าง Walrus Operator ตัวปัญหาในคำสั่ง block with ออกเพื่อความเสถียรสูงสุด
+# --- 📊 ฝั่งที่ 2: ชาร์ตหลักแบบขยายพื้นที่เต็มจอ (Right Main Column) ---
 with col_right_main:
     try:
         stock = yf.Ticker(active_ticker)
@@ -273,20 +272,35 @@ with col_right_main:
             st.markdown(f"<div class='section-title' style='margin-top:12px; margin-bottom: 2px;'>📊 {long_name} SENTIMENT RADAR: {sentiment_pct:.1f}%</div>", unsafe_allow_html=True)
             st.markdown(f"<div class='sentiment-container'><div class='sentiment-bar' style='width: {sentiment_pct}%;'></div></div>", unsafe_allow_html=True)
             
+            # --- 🛠️ [ADAPTIVE MODIFIER] ปรับความหนาเส้น เพิ่มความคมชัดสูง และปลดล็อกแกนอิสระเพื่อรองรับเมาส์ Scroll ซูม ---
             fig = make_subplots(rows=2, cols=1, shared_xaxes=True, row_heights=[0.80, 0.20], vertical_spacing=0.02)
+            
             fig.add_trace(go.Candlestick(
                 x=hist_chart_converted.index, open=hist_chart_converted['Open'], high=hist_chart_converted['High'], low=hist_chart_converted['Low'], close=hist_chart_converted['Close'],
-                increasing=dict(line=dict(color='#00E676'), fillcolor='#00E676'), decreasing=dict(line=dict(color='#FF5252'), fillcolor='#FF5252')
+                increasing=dict(line=dict(color='#00E676', width=1.5), fillcolor='#00E676'), 
+                decreasing=dict(line=dict(color='#FF5252', width=1.5), fillcolor='#FF5252')
             ), row=1, col=1)
             
-            fig.add_trace(go.Scatter(x=hist_chart_converted.index, y=hist_chart_converted['RSI'], line=dict(color='#FFD600', width=1.1)), row=2, col=1)
-            fig.add_hline(y=70, line_dash="dash", line_color="#FF5252", row=2, col=1)
-            fig.add_hline(y=30, line_dash="dash", line_color="#00E676", row=2, col=1)
+            fig.add_trace(go.Scatter(x=hist_chart_converted.index, y=hist_chart_converted['RSI'], line=dict(color='#FFD600', width=1.4)), row=2, col=1)
+            fig.add_hline(y=70, line_dash="dash", line_color="#FF5252", line_width=1.2, row=2, col=1)
+            fig.add_hline(y=30, line_dash="dash", line_color="#00E676", line_width=1.2, row=2, col=1)
             
-            fig.update_layout(template=plotly_template, xaxis_rangeslider_visible=False, paper_bgcolor=bg_app, plot_bgcolor=bg_card, margin=dict(l=4, r=4, t=4, b=4), height=470, showlegend=False)
-            fig.update_yaxes(gridcolor=grid_chart, zerolinecolor=grid_chart)
-            fig.update_xaxes(gridcolor=grid_chart)
-            st.plotly_chart(fig, use_container_width=True)
+            fig.update_layout(
+                template=plotly_template, 
+                xaxis_rangeslider_visible=False, 
+                paper_bgcolor=bg_app, 
+                plot_bgcolor=bg_card, 
+                margin=dict(l=4, r=4, t=4, b=4), 
+                height=490, # ขยายความสูงเพิ่มความชัดเจนเต็มสเกล
+                showlegend=False
+            )
+            
+            # ปรับเส้นกริดให้สีเข้มนำสายตา และตั้งค่า fixedrange=False เพื่อให้ซูมเข้าออกได้อย่างอิสระ
+            fig.update_yaxes(gridcolor='#1F222E', zerolinecolor='#2A2E39', fixedrange=False, linewidth=1)
+            fig.update_xaxes(gridcolor='#1F222E', fixedrange=False, linewidth=1)
+            
+            # ── [CRITICAL RULE] ยัดคอนฟิก 'scrollZoom': True ลงในคำสั่งเรนเดอร์เพื่อให้ขยับซูมด้วยลูกกลิ้งเมาส์ได้ ──
+            st.plotly_chart(fig, use_container_width=True, config={'scrollZoom': True, 'displayModeBar': True})
             
             st.write("---")
             st.markdown("<div class='section-title'>🎯 LIVE SPOT & OPTIONS MATRIX DIAGNOSTIC</div>", unsafe_allow_html=True)
