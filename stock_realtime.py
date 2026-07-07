@@ -8,24 +8,18 @@ from concurrent.futures import ThreadPoolExecutor
 
 # 1. Page Configuration
 st.set_page_config(
-    page_title="ALPHA TERMINAL // PRO GRID",
+    page_title="ALPHA TERMINAL // TOP MENU",
     page_icon="⚡",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed" # ยุบแถบข้างอัตโนมัติเพื่อเปิดพื้นที่
 )
 
-# 2. Sidebar Setup & Config Panel
-st.sidebar.markdown("<h4 style='font-size:15px; font-weight:700;'>🎛️ CONFIGURATION</h4>", unsafe_allow_html=True)
-st.sidebar.write("---")
-
-theme_mode = st.sidebar.toggle("🌙 Activate Dark Mode", value=True)
-ticker_input = st.sidebar.text_input("รหัสสินทรัพย์ (Ticker):", value="AAPL")
-risk_profile = st.sidebar.selectbox("โมเดลความเสี่ยง:", ["CONSERVATIVE (ต่ำ)", "MODERATE (ปานกลาง)", "AGGRESSIVE (สูง)"])
-timeframe_choice = st.sidebar.selectbox("กรอบเวลาชาร์ต:", ["M5 (5 นาที)", "M15 (15 นาที)", "M30 (30 นาที)", "H1 (1 ชั่วโมง)", "D1 (1 วัน)"])
-currency_target = st.sidebar.selectbox("สกุลเงินแสดงผล:", ["สกุลเงินดั้งเดิมของหุ้น", "THB (บาทไทย)", "USD (ดอลลาร์สหรัฐ)"])
+# 2. Base Theme Memory Setup (ตรวจจับการกดสลับโหมดก่อนเรนเดอร์ CSS)
+if 'dark_mode' not in st.session_state:
+    st.session_state['dark_mode'] = True
 
 # 3. Dynamic Injecting CSS Color Palettes
-if theme_mode:
+if st.session_state['dark_mode']:
     bg_app = "#0E1117"
     bg_card = "#161B22"
     border_color = "#21262D"
@@ -58,12 +52,22 @@ else:
 
 st.markdown(f"""
     <style>
-    /* Global Container */
+    /* Global Base */
     .stApp {{
         background-color: {bg_app};
         color: {text_main};
         font-family: 'Inter', -apple-system, sans-serif;
         transition: all 0.3s ease;
+    }}
+    
+    /* Top Configuration Menu Bar Container */
+    .top-config-bar {{
+        background-color: {bg_card};
+        border: 1px solid {border_color};
+        border-radius: 10px;
+        padding: 15px 20px 5px 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.02);
     }}
     
     /* Section Headers */
@@ -106,32 +110,16 @@ st.markdown(f"""
     .zone-tp {{ background-color: rgba(210, 153, 34, 0.05); color: #D29922; border-color: rgba(210, 153, 34, 0.12); }}
     .zone-sl {{ background-color: rgba(248, 81, 73, 0.05); color: #F85149; border-color: rgba(248, 81, 73, 0.12); }}
     
-    /* 🏆 สไตล์การ์ดจัดอันดับแถบซ้าย (Premium Leaderboard Row) 🏆 */
+    /* Premium Leaderboard Row */
     .rank-row {{
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        background-color: {bg_card};
-        border: 1px solid {border_color};
-        border-radius: 8px;
-        padding: 10px 14px;
-        margin-bottom: 8px;
-        transition: all 0.2s ease-in-out;
+        display: flex; align-items: center; justify-content: space-between;
+        background-color: {bg_card}; border: 1px solid {border_color}; border-radius: 8px;
+        padding: 10px 14px; margin-bottom: 8px; transition: all 0.2s ease-in-out;
     }}
-    .rank-row:hover {{
-        border-color: {card_hover};
-        transform: scale(1.01);
-    }}
+    .rank-row:hover {{ border-color: {card_hover}; transform: scale(1.01); }}
     .rank-badge {{
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 24px;
-        height: 24px;
-        border-radius: 6px;
-        font-size: 11px;
-        font-weight: 700;
-        margin-right: 10px;
+        display: flex; align-items: center; justify-content: center;
+        width: 24px; height: 24px; border-radius: 6px; font-size: 11px; font-weight: 700; margin-right: 10px;
     }}
     .rank-1-bg {{ background-color: {rank_1}; color: {rank_1_txt}; }}
     .rank-2-bg {{ background-color: {rank_2}; color: {rank_2_txt}; }}
@@ -141,13 +129,8 @@ st.markdown(f"""
     .ticker-name {{ font-size: 14px; font-weight: 700; color: {text_main}; }}
     .ticker-price {{ font-size: 12px; color: {text_sub}; }}
     .winrate-box {{
-        background-color: rgba(46, 160, 67, 0.08);
-        border: 1px solid rgba(46, 160, 67, 0.15);
-        color: #2EA043;
-        padding: 4px 8px;
-        border-radius: 6px;
-        font-size: 12px;
-        font-weight: 700;
+        background-color: rgba(46, 160, 67, 0.08); border: 1px solid rgba(46, 160, 67, 0.15);
+        color: #2EA043; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 700;
     }}
     
     /* Live Pulse Indicator */
@@ -169,8 +152,6 @@ st.markdown(f"""
         background: linear-gradient(90deg, #F85149 0%, #D29922 50%, #2EA043 100%); height: 100%; transition: width 0.6s ease;
     }}
     
-    section[data-testid="stSidebar"] {{ background-color: {bg_card} !important; border-right: 1px solid {border_color}; }}
-    
     /* Matrix Standard Table Override */
     .stTable, table, th, td, tr {{
         color: {text_main} !important; background-color: {bg_card} !important; border: 1px solid {border_color} !important; border-collapse: collapse;
@@ -180,8 +161,29 @@ st.markdown(f"""
     </style>
 """, unsafe_allow_html=True)
 
-# 4. Clean Banner Row
-st.markdown(f"<div style='display: flex; align-items: center; justify-content: space-between; margin-top: -35px; border-bottom: 1px solid {border_color}; padding-bottom: 8px;'><div style='display:flex; align-items:center;'><h3 style='color: {text_main}; font-weight:800; letter-spacing:-0.5px; margin: 0;'>⚡ ALPHA ENGINE</h3><span style='background-color: {border_color}; color: {text_sub}; padding: 2px 6px; border-radius: 4px; margin-left: 10px; font-size: 9px; font-weight: 600;'>GRID PLATFORM v12.0</span></div><div style='font-size:12px; color:{text_sub};'><span class='pulse-beacon'></span>LIVE CONNECTIVITY ACTIVE</div></div>", unsafe_allow_html=True)
+# 4. Clean Banner Row (แสดงที่หัวสุดของแอป)
+st.markdown(f"<div style='display: flex; align-items: center; justify-content: space-between; margin-top: -30px; border-bottom: 1px solid {border_color}; padding-bottom: 8px;'><div style='display:flex; align-items:center;'><h3 style='color: {text_main}; font-weight:800; letter-spacing:-0.5px; margin: 0;'>⚡ ALPHA ENGINE</h3><span style='background-color: {border_color}; color: {text_sub}; padding: 2px 6px; border-radius: 4px; margin-left: 10px; font-size: 9px; font-weight: 600;'>TOP NAVIGATION PLATFORM v13.0</span></div><div style='font-size:12px; color:{text_sub};'><span class='pulse-beacon'></span>LIVE CONNECTIVITY ACTIVE</div></div>", unsafe_allow_html=True)
+st.write("")
+
+# 5. 🛠️ ย้ายแถบควบคุมมาเรียงหน้ากระดานด้านบนสุด (Top Menu Grid Control Panel)
+st.markdown("<div class='top-config-bar'>", unsafe_allow_html=True)
+tc1, tc2, tc3, tc4, tc5 = st.columns([1.5, 2.0, 1.8, 2.0, 1.7])
+
+with tc1:
+    ticker_input = st.text_input("รหัสสินทรัพย์ (Ticker):", value="AAPL", key="top_ticker")
+with tc2:
+    risk_profile = st.selectbox("โมเดลความเสี่ยง:", ["CONSERVATIVE (ต่ำ)", "MODERATE (ปานกลาง)", "AGGRESSIVE (สูง)"], key="top_risk")
+with tc3:
+    timeframe_choice = st.selectbox("กรอบเวลาชาร์ต:", ["M5 (5 นาที)", "M15 (15 นาที)", "M30 (30 นาที)", "H1 (1 ชั่วโมง)", "D1 (1 วัน)"], key="top_tf")
+with tc4:
+    currency_target = st.selectbox("สกุลเงินแสดงผล:", ["สกุลเงินดั้งเดิมของหุ้น", "THB (บาทไทย)", "USD (ดอลลาร์สหรัฐ)"], key="top_currency")
+with tc5:
+    st.write("<div style='margin-top:6px;'></div>", unsafe_allow_html=True)
+    st.session_state['dark_mode'] = st.toggle("🌙 Dark Mode", value=st.session_state['dark_mode'])
+st.markdown("</div>", unsafe_allow_html=True)
+
+# ปุ่มสั่งรันการประมวลผลกว้างเต็มหน้าจอ วางคั่นไว้ใต้แผงเมนูบน
+execute = st.button("📡 EXECUTE QUANT ANALYSIS", use_container_width=True)
 st.write("")
 
 timeframe_map = {
@@ -203,10 +205,10 @@ def get_fx_rate(from_curr, to_curr):
     except:
         return 1.0
 
-# 5. 3-COLUMN MASTER GRID LAYOUT
+# 6. 3-COLUMN MASTER GRID LAYOUT (พื้นที่แสดงผลดนล่างยังแบ่ง 3 คอลัมน์กว้างขวางเหมือนเดิม)
 col_left_scan, col_center_chart, col_right_matrix = st.columns([2.7, 4.9, 2.4])
 
-# --- 🥇 ฝั่งที่ 1: หน้าตาการ์ดจัดอันดับแบบใหม่ ไม่ใช้ตารางธรรมดา (Left Column) ---
+# --- 🥇 ฝั่งที่ 1: การ์ดจัดอันดับหุ้น Winrate สูง (Left Column) ---
 with col_left_scan:
     st.markdown("<div class='section-title'>🏆 HIGH WINRATE LEADERBOARD</div>", unsafe_allow_html=True)
     watchlist = ["AAPL", "TSLA", "NVDA", "MSFT", "AMD", "META", "AMZN", "NFLX", "GOOGL", "BABA", "PTT.BK", "CPALL.BK"]
@@ -229,16 +231,12 @@ with col_left_scan:
             task_outputs = executor.map(fetch_single_scanner_data, tickers)
             for output in task_outputs:
                 if output is not None: results.append(output)
-        
         if results:
-            df = pd.DataFrame(results).sort_values(by="WINRATE", ascending=False).head(10)
-            return df.to_dict(orient="records")
+            return pd.DataFrame(results).sort_values(by="WINRATE", ascending=False).head(10).to_dict(orient="records")
         return []
 
     leaderboard_data = scan_global_leaderboard(watchlist)
-    
     if leaderboard_data:
-        # วนลูปวาดการ์ดจัดอันดับแถวละตัวแทนการใช้ตาราง
         for i, row in enumerate(leaderboard_data):
             rank = i + 1
             if rank == 1: badge_class = "rank-1-bg"; rank_icon = "🥇"
@@ -258,13 +256,9 @@ with col_left_scan:
                 <div class='winrate-box'>{row['WINRATE']:.1f}% WR</div>
             </div>
             """, unsafe_allow_html=True)
-    else:
-        st.caption("กำลังประมวลผลข้อมูลลีดเดอร์บอร์ด...")
 
 # --- 📊 ฝั่งที่ 2: หน้าจอวิเคราะห์กราฟเทคนิคอลหลัก (Center Column) ---
 with col_center_chart:
-    execute = st.sidebar.button("📡 EXECUTE QUANT ANALYSIS", use_container_width=True)
-    
     if execute and ticker_input:
         try:
             stock = yf.Ticker(ticker_input)
@@ -341,7 +335,7 @@ with col_center_chart:
         except Exception as e:
             st.error(f"⚠️ Error: {str(e)}")
     else:
-        st.markdown(f"<div style='background-color:{bg_card}; border: 1px solid {border_color}; padding:20px; border-radius:8px; text-align:center; color:{text_sub}; margin-top:20px;'>📡 กรุณาคลิกปุ่ม 'EXECUTE QUANT ANALYSIS' ที่แผงควบคุมฝั่งซ้ายเพื่อดึงพิกัดโครงสร้างราคาแบบเรียลไทม์</div>", unsafe_allow_html=True)
+        st.markdown(f"<div style='background-color:{bg_card}; border: 1px solid {border_color}; padding:40px; border-radius:8px; text-align:center; color:{text_sub}; margin-top:0px;'>📡 ระบุรหัสสินทรัพย์และพารามิเตอร์ด้านบน จากนั้นคลิกปุ่ม 'EXECUTE QUANT ANALYSIS' เพื่อเริ่มต้นรันคำนวณกราฟ</div>", unsafe_allow_html=True)
 
 # --- 🎯 ฝั่งที่ 3: ตารางคำนวณเป้าหมายและสัญญาณออปชัน (Right Column) ---
 with col_right_matrix:
@@ -387,4 +381,4 @@ with col_right_matrix:
         </div>
         """, unsafe_allow_html=True)
     else:
-        st.caption("ระบบคำนวณจะแสดงพิกัดราคาจุดซื้อและสัญญาณสัญญาออปชันอ้างอิงทันทีหลังจากกดรันดึงกราฟ")
+        st.caption("ระบบจะคำนวณพิกัด Spot Matrix และทริกเกอร์ออปชันให้แสดงผลที่นี่ทันทีหลังจากการยิงคำสั่งรันด้านบน")
