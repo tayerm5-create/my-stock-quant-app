@@ -8,119 +8,136 @@ from concurrent.futures import ThreadPoolExecutor
 
 # 1. Page Configuration
 st.set_page_config(
-    page_title="ALPHA ENGINE // CLEAN TERMINAL",
+    page_title="ALPHA ENGINE // DYNAMIC TERMINAL",
     page_icon="⚡",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# 2. Clean Modern UI / UX Styling (Minimalist Dark Theme)
-st.markdown("""
+# 2. Sidebar Settings & Theme Toggle Switch
+st.sidebar.markdown("<h4 style='font-size:15px;'>🎛️ CONFIGURATION</h4>", unsafe_allow_html=True)
+st.sidebar.write("---")
+
+# ปุ่มสลับโหมดธีมที่แถบซ้ายมือ (เปิด = โหมดมืด / ปิด = โหมดสว่าง)
+theme_mode = st.sidebar.toggle("🌙 Activate Dark Mode", value=True)
+
+ticker_input = st.sidebar.text_input("รหัสสินทรัพย์ (Ticker):", value="AAPL")
+risk_profile = st.sidebar.selectbox("โมเดลความเสี่ยง:", ["CONSERVATIVE (ต่ำ)", "MODERATE (ปานกลาง)", "AGGRESSIVE (สูง)"])
+timeframe_choice = st.sidebar.selectbox("กรอบเวลาชาร์ต:", ["M5 (5 นาที)", "M15 (15 นาที)", "M30 (30 นาที)", "H1 (1 ชั่วโมง)", "D1 (1 วัน)"])
+currency_target = st.sidebar.selectbox("สกุลเงินแสดงผล:", ["สกุลเงินดั้งเดิมของหุ้น", "THB (บาทไทย)", "USD (ดอลลาร์สหรัฐ)"])
+
+# 3. Dynamic Injecting CSS Color Palettes (สลับสีตามปุ่มกด)
+if theme_mode:
+    # 🌑 ชุดสีสำหรับโหมดมืด (Dark Minimalist)
+    bg_app = "#0E1117"
+    bg_card = "#161B22"
+    border_color = "#21262D"
+    text_main = "#F0F3FA"
+    text_sub = "#8B949E"
+    th_bg = "#1F242C"
+    plotly_template = "plotly_dark"
+    grid_chart = "#21262D"
+    card_hover = "#58A6FF"
+else:
+    # ☀️ ชุดสีสำหรับโหมดสว่าง (Light Minimalist)
+    bg_app = "#F8F9FA"
+    bg_card = "#FFFFFF"
+    border_color = "#E1E4E6"
+    text_main = "#1F2328"
+    text_sub = "#57606A"
+    th_bg = "#F6F8FA"
+    plotly_template = "plotly_white"
+    grid_chart = "#E1E4E6"
+    card_hover = "#0969DA"
+
+st.markdown(f"""
     <style>
-    /* Global Base & Clean Text */
-    .stApp {
-        background-color: #0E1117;
-        color: #C9D1D9;
+    .stApp {{
+        background-color: {bg_app};
+        color: {text_main};
         font-family: 'Inter', -apple-system, sans-serif;
-    }
-    
-    /* Clean Minimalist Header */
-    .main-header {
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }}
+    .main-header {{
         font-size: 26px;
         font-weight: 700;
-        color: #F0F3FA;
+        color: {text_main};
         letter-spacing: -0.3px;
         padding-bottom: 8px;
-        border-bottom: 1px solid #21262D;
-    }
-    
-    /* Elegant Flat Container Cards */
-    .quant-card {
-        background-color: #161B22;
-        border: 1px solid #21262D;
+        border-bottom: 1px solid {border_color};
+    }}
+    .quant-card {{
+        background-color: {bg_card};
+        border: 1px solid {border_color};
         border-radius: 10px;
         padding: 20px;
         text-align: center;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         transition: all 0.2s ease-in-out;
-    }
-    .quant-card:hover {
-        border-color: #58A6FF;
-    }
-    .card-title {
+    }}
+    .quant-card:hover {{
+        border-color: {card_hover};
+    }}
+    .card-title {{
         font-size: 11px;
-        color: #8B949E;
+        color: {text_sub};
         font-weight: 600;
         letter-spacing: 0.5px;
         text-transform: uppercase;
         margin-bottom: 6px;
-    }
-    .card-value {
+    }}
+    .card-value {{
         font-size: 26px;
         font-weight: 700;
-        color: #F0F3FA;
-    }
-    
-    /* Soft Pastel Signal Badges */
-    .badge-zone {
+        color: {text_main};
+    }}
+    .badge-zone {{
         padding: 10px 14px;
         border-radius: 6px;
         font-size: 14px;
         font-weight: 500;
         margin-bottom: 10px;
         border: 1px solid;
-    }
-    .zone-buy { background-color: rgba(56, 139, 253, 0.1); color: #58A6FF; border-color: rgba(56, 139, 253, 0.2); }
-    .zone-tp { background-color: rgba(210, 153, 34, 0.1); color: #D29922; border-color: rgba(210, 153, 34, 0.2); }
-    .zone-sl { background-color: rgba(248, 81, 73, 0.1); color: #F85149; border-color: rgba(248, 81, 73, 0.2); }
+    }}
+    .zone-buy {{ background-color: rgba(56, 139, 253, 0.1); color: #58A6FF; border-color: rgba(56, 139, 253, 0.2); }}
+    .zone-tp {{ background-color: rgba(210, 153, 34, 0.1); color: #D29922; border-color: rgba(210, 153, 34, 0.2); }}
+    .zone-sl {{ background-color: rgba(248, 81, 73, 0.1); color: #F85149; border-color: rgba(248, 81, 73, 0.2); }}
     
-    /* Sidebar Clean styling */
-    section[data-testid="stSidebar"] {
-        background-color: #161B22 !important;
-        border-right: 1px solid #21262D;
-    }
-    
-    /* Flat Clean Alert Boxes */
-    .stAlert {
-        background-color: #161B22 !important;
-        color: #C9D1D9 !important;
-        border: 1px solid #21262D !important;
+    section[data-testid="stSidebar"] {{
+        background-color: {bg_card} !important;
+        border-right: 1px solid {border_color};
+    }}
+    .stAlert {{
+        background-color: {bg_card} !important;
+        color: {text_main} !important;
+        border: 1px solid {border_color} !important;
         border-radius: 8px;
-    }
-    
-    /* Clean Minimalist Tables */
-    .stTable, table, th, td, tr {
-        color: #C9D1D9 !important; 
-        background-color: #161B22 !important;
-        border: 1px solid #21262D !important;
+    }}
+    .stTable, table, th, td, tr {{
+        color: {text_main} !important; 
+        background-color: {bg_card} !important;
+        border: 1px solid {border_color} !important;
         border-collapse: collapse;
-    }
-    th {
-        background-color: #1F242C !important;
-        color: #58A6FF !important;
+    }}
+    th {{
+        background-color: {th_bg} !important;
+        color: {card_hover} !important;
         font-weight: 600 !important;
         font-size: 11px;
         padding: 10px !important;
         text-transform: uppercase;
-    }
-    td {
+    }}
+    td {{
         padding: 10px !important;
         font-size: 13px;
-        border-bottom: 1px solid #21262D !important;
-    }
+        border-bottom: 1px solid {border_color} !important;
+    }}
     </style>
 """, unsafe_allow_html=True)
 
-# 3. Clean App Banner
-st.markdown("<div style='display: flex; align-items: center; margin-top: -30px;'><h2 style='color: #F0F3FA; font-weight:800; letter-spacing:-0.5px; margin: 0;'>⚡ ALPHA ENGINE</h2><span style='background-color: #21262D; color: #8B949E; border: 1px solid #30363D; padding: 3px 8px; border-radius: 4px; margin-left: 12px; font-size: 10px; font-weight: 600;'>TERMINAL v8.0</span></div>", unsafe_allow_html=True)
-st.markdown("<p style='color: #8B949E; font-size: 13px; margin-top: 4px; margin-bottom: 20px;'>สถาบันประมวลผลวิเคราะห์ราคาและคัดกรองข้อมูลควอนต์เพื่อการตัดสินใจที่แม่นยำ</p>", unsafe_allow_html=True)
-
-# 4. Sidebar Configuration
-st.sidebar.markdown("<h4 style='color: #F0F3FA; font-size:15px;'>🎛️ CONFIGURATION</h4>", unsafe_allow_html=True)
-st.sidebar.write("---")
-ticker_input = st.sidebar.text_input("รหัสสินทรัพย์ (Ticker):", value="AAPL")
-risk_profile = st.sidebar.selectbox("โมเดลความเสี่ยง:", ["CONSERVATIVE (ต่ำ)", "MODERATE (ปานกลาง)", "AGGRESSIVE (สูง)"])
-timeframe_choice = st.sidebar.selectbox("กรอบเวลาชาร์ต:", ["M5 (5 นาที)", "M15 (15 นาที)", "M30 (30 นาที)", "H1 (1 ชั่วโมง)", "D1 (1 วัน)"])
-currency_target = st.sidebar.selectbox("สกุลเงินแสดงผล:", ["สกุลเงินดั้งเดิมของหุ้น", "THB (บาทไทย)", "USD (ดอลลาร์สหรัฐ)"])
+# 4. Clean App Banner
+st.markdown(f"<div style='display: flex; align-items: center; margin-top: -30px;'><h2 style='color: {text_main}; font-weight:800; letter-spacing:-0.5px; margin: 0;'>⚡ ALPHA ENGINE</h2><span style='background-color: {border_color}; color: {text_sub}; border: 1px solid {border_color}; padding: 3px 8px; border-radius: 4px; margin-left: 12px; font-size: 10px; font-weight: 600;'>TERMINAL v9.0</span></div>", unsafe_allow_html=True)
+st.markdown(f"<p style='color: {text_sub}; font-size: 13px; margin-top: 4px; margin-bottom: 20px;'>สถาบันประมวลผลวิเคราะห์ราคาและคัดกรองข้อมูลควอนต์เพื่อการตัดสินใจที่แม่นยำ</p>", unsafe_allow_html=True)
 
 timeframe_map = {
     "M5 (5 นาที)": {"period": "5d", "interval": "5m"},
@@ -181,7 +198,6 @@ with main_col:
                     for col in ['Open', 'High', 'Low', 'Close']:
                         hist_chart_converted[col] = hist_chart_converted[col] * fx_factor
                     
-                    # RSI Calculation
                     delta = hist_chart_converted['Close'].diff()
                     gain = (delta.where(delta > 0, 0)).rolling(window=14).mean()
                     loss = (-delta.where(delta < 0, 0)).rolling(window=14).mean()
@@ -200,7 +216,7 @@ with main_col:
                     except:
                         iv_status, iv_advice = "32.4%", "IV ปกติ เหมาะสมต่อการเปิดออปชันสั้น"
                     
-                    st.markdown(f"<div class='main-header'>{long_name} <span style='color:#58A6FF; font-size:16px;'>[{ticker_input.upper()}]</span></div>", unsafe_allow_html=True)
+                    st.markdown(f"<div class='main-header'>{long_name} <span style='color:{card_hover}; font-size:16px;'>[{ticker_input.upper()}]</span></div>", unsafe_allow_html=True)
                     st.write("")
                     
                     d1, d2, d3 = st.columns(3)
@@ -211,7 +227,7 @@ with main_col:
                     with d2: st.markdown(f"<div class='quant-card'><div class='card-title'>สูงสุดรอบวัน ({display_currency})</div><div class='card-value' style='color:#388BFD;'>{high_val:,.2f}</div></div>", unsafe_allow_html=True)
                     with d3: st.markdown(f"<div class='quant-card'><div class='card-title'>ต่ำสุดรอบวัน ({display_currency})</div><div class='card-value' style='color:#F85149;'>{low_val:,.2f}</div></div>", unsafe_allow_html=True)
                     
-                    # --- Subplots (Clean Chart Styling - FIXED LINE_DASH) ---
+                    # --- Subplots Style Mapping ---
                     st.write("")
                     fig = make_subplots(rows=2, cols=1, shared_xaxes=True, row_heights=[0.75, 0.25], vertical_spacing=0.04)
                     
@@ -222,14 +238,13 @@ with main_col:
                     ), row=1, col=1)
                     
                     fig.add_trace(go.Scatter(x=hist_chart_converted.index, y=hist_chart_converted['RSI'], line=dict(color='#D29922', width=1.2)), row=2, col=1)
-                    
-                    # แก้ไข line_dash จาก shortdot เป็น dash เรียบร้อยแล้วครับ
                     fig.add_hline(y=70, line_dash="dash", line_color="#F85149", row=2, col=1)
                     fig.add_hline(y=30, line_dash="dash", line_color="#2EA043", row=2, col=1)
                     
-                    fig.update_layout(template="plotly_dark", xaxis_rangeslider_visible=False, paper_bgcolor='#0E1117', plot_bgcolor='#161B22', margin=dict(l=4, r=4, t=4, b=4), height=460, showlegend=False)
-                    fig.update_yaxes(gridcolor='#21262D', zerolinecolor='#21262D')
-                    fig.update_xaxes(gridcolor='#21262D')
+                    # อัปเดตพื้นหลังชาร์ตตามธีมที่เลือก
+                    fig.update_layout(template=plotly_template, xaxis_rangeslider_visible=False, paper_bgcolor=bg_app, plot_bgcolor=bg_card, margin=dict(l=4, r=4, t=4, b=4), height=460, showlegend=False)
+                    fig.update_yaxes(gridcolor=grid_chart, zerolinecolor=grid_chart)
+                    fig.update_xaxes(gridcolor=grid_chart)
                     st.plotly_chart(fig, use_container_width=True)
                     
                     # --- Technical Matrix ---
@@ -248,7 +263,7 @@ with main_col:
                     l_box, r_box = st.columns(2)
                     
                     with l_box:
-                        st.markdown(f"<h4 style='color: #58A6FF; font-size:16px;'>🎯 SPOT MATRIX SPECIFICATIONS ({display_currency})</h4>", unsafe_allow_html=True)
+                        st.markdown(f"<h4 style='color: {card_hover}; font-size:16px;'>🎯 SPOT MATRIX SPECIFICATIONS ({display_currency})</h4>", unsafe_allow_html=True)
                         st.markdown(f"<div class='badge-zone zone-buy'>📍 โซนเข้าซื้อ (Entry Zone): {entry_min:,.2f} - {entry_max:,.2f}</div>", unsafe_allow_html=True)
                         st.markdown(f"<div class='badge-zone zone-tp'>🎯 เป้าหมายทำกำไร (Take Profit): {tp_price:,.2f}</div>", unsafe_allow_html=True)
                         st.markdown(f"<div class='badge-zone zone-sl'>🛑 จุดตัดขาดทุน (Stop Loss): {sl_price:,.2f}</div>", unsafe_allow_html=True)
@@ -274,7 +289,7 @@ with main_col:
 
 # --- ⚡ Right Column: Minimalist Threaded Scanner ---
 with scanner_col:
-    st.markdown("<h4 style='color: #388BFD; font-weight:700; font-size:16px;'>⚡ TOP 10 QUANT SCREENER</h4>", unsafe_allow_html=True)
+    st.markdown(f"<h4 style='color: {card_hover}; font-weight:700; font-size:16px;'>⚡ TOP 10 QUANT SCREENER</h4>", unsafe_allow_html=True)
     st.markdown("<p style='color:#8B949E; font-size:12px; margin-top:-6px;'>จัดอันดับหุ้น 10 ตัวที่มี Winrate สูงสุดจากแบบจำลองควอนต์รอบปัจจุบัน</p>", unsafe_allow_html=True)
     
     watchlist = ["AAPL", "TSLA", "NVDA", "MSFT", "AMD", "META", "AMZN", "NFLX", "GOOGL", "BABA", "PTT.BK", "CPALL.BK"]
