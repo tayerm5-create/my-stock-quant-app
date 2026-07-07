@@ -18,7 +18,7 @@ st.set_page_config(
 if 'dark_mode' not in st.session_state:
     st.session_state['dark_mode'] = True
 if 'selected_ticker' not in st.session_state:
-    st.session_state['selected_ticker'] = "AAPL" # หุ้นเริ่มต้นสำหรับการเปิดหน้าแรก
+    st.session_state['selected_ticker'] = "AAPL"
 
 # 3. Dynamic Injecting CSS Color Palettes
 if st.session_state['dark_mode']:
@@ -32,7 +32,8 @@ if st.session_state['dark_mode']:
     grid_chart = "#21262D"
     card_hover = "#58A6FF"
     sentiment_bg = "#21262D"
-    rank_bg = "rgba(139, 148, 158, 0.08)"; rank_txt = "#8B949E"
+    rank_bg = "rgba(139, 148, 158, 0.08)"
+    rank_txt = "#8B949E"
 else:
     bg_app = "#F8F9FA"
     bg_card = "#FFFFFF"
@@ -44,7 +45,8 @@ else:
     grid_chart = "#E1E4E6"
     card_hover = "#0969DA"
     sentiment_bg = "#E1E4E6"
-    rank_bg = "rgba(87, 96, 106, 0.08)"; rank_txt = "#57606A"
+    rank_bg = "rgba(87, 96, 106, 0.08)"
+    rank_txt = "#57606A"
 
 st.markdown(f"""
     <style>
@@ -64,17 +66,45 @@ st.markdown(f"""
     .zone-tp {{ background-color: rgba(210, 153, 34, 0.05); color: #D29922; border-color: rgba(210, 153, 34, 0.12); }}
     .zone-sl {{ background-color: rgba(248, 81, 73, 0.05); color: #F85149; border-color: rgba(248, 81, 73, 0.12); }}
     
-    .rank-box-wrapper {{ background-color: {bg_card}; border: 1px solid {border_color}; border-radius: 8px; margin-bottom: 8px; transition: all 0.2s ease; display: block; position: relative; }}
-    .rank-box-wrapper:hover {{ border-color: {card_hover}; transform: scale(1.01); }}
-    .active-row-fx {{ border-color: {card_hover} !important; background-color: rgba(88, 166, 255, 0.02) !important; }}
+    /* 🏆 ปรับปรุงสไตล์กรอบการ์ดลีดเดอร์บอร์ดฝั่งซ้ายแบบใหม่ (Clean Grid Style) 🏆 */
+    .rank-box-container {{
+        background-color: {bg_card};
+        border: 1px solid {border_color};
+        border-radius: 8px;
+        margin-bottom: 8px;
+        padding: 4px 12px;
+        transition: all 0.2s ease;
+    }}
+    .rank-box-container:hover {{ border-color: {card_hover}; transform: scale(1.01); }}
+    .active-row-fx {{ border-color: {card_hover} !important; background-color: rgba(88, 166, 255, 0.03) !important; }}
     
-    .rank-badge {{ display: flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 4px; font-size: 10px; font-weight: 700; margin-right: 12px; background-color: {rank_bg}; color: {rank_txt}; }}
-    .ticker-name {{ font-size: 13px; font-weight: 700; color: {text_main}; text-align: left; }}
-    .ticker-price {{ font-size: 11px; color: {text_sub}; text-align: left; }}
-    .winrate-box {{ background-color: rgba(46, 160, 67, 0.08); border: 1px solid rgba(46, 160, 67, 0.15); color: #2EA043; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; }}
+    /* ปรับแต่งปุ่มกดดนในอันดับหุ้นให้เคลียร์ใสไร้เส้นขอบ และแสดงฟอนต์คมชัด */
+    div.stButton > button {{
+        background-color: transparent !important;
+        color: {text_main} !important;
+        border: none !important;
+        padding: 8px 0px !important;
+        width: 100% !important;
+        text-align: left !important;
+        font-weight: 700 !important;
+        font-size: 14px !important;
+    }}
+    div.stButton > button:hover {{ color: {card_hover} !important; background-color: transparent !important; }}
     
-    div.stButton > button {{ background-color: transparent !important; color: inherit !important; border: none !important; padding: 10px 14px !important; width: 100% !important; text-align: left !important; border-radius: 8px !important; }}
-    div.stButton > button:hover {{ background-color: transparent !important; color: inherit !important; }}
+    .rank-num-label {{
+        display: inline-flex; align-items: center; justify-content: center;
+        background-color: {rank_bg}; color: {rank_txt};
+        width: 22px; height: 22px; border-radius: 4px;
+        font-size: 11px; font-weight: 700; margin-top: 10px;
+    }}
+    .sub-price-text {{ font-size: 11px; color: {text_sub}; font-weight: 400; margin-top: 2px; }}
+    
+    .winrate-pill {{
+        display: inline-block; background-color: rgba(46, 160, 67, 0.08);
+        border: 1px solid rgba(46, 160, 67, 0.15); color: #2EA043;
+        padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700;
+        margin-top: 8px; text-align: center; float: right;
+    }}
     
     .pulse-beacon {{ display: inline-block; width: 6px; height: 6px; background-color: #2EA043; border-radius: 50%; margin-right: 6px; box-shadow: 0 0 0 0 rgba(46, 160, 67, 0.7); animation: pulse 1.6s infinite; vertical-align: middle; }}
     @keyframes pulse {{ 0% {{ transform: scale(0.95); box-shadow: 0 0 0 0 rgba(46, 160, 67, 0.5); }} 70% {{ transform: scale(1); box-shadow: 0 0 0 4px rgba(46, 160, 67, 0); }} 100% {{ transform: scale(0.95); box-shadow: 0 0 0 0 rgba(46, 160, 67, 0); }} }}
@@ -88,7 +118,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # 4. App Banner Row
-st.markdown(f"<div style='display: flex; align-items: center; justify-content: space-between; margin-top: -30px; border-bottom: 1px solid {border_color}; padding-bottom: 8px;'><div style='display:flex; align-items:center;'><h3 style='color: {text_main}; font-weight:800; letter-spacing:-0.5px; margin: 0;'>⚡ ALPHA ENGINE</h3><span style='background-color: {border_color}; color: {text_sub}; padding: 2px 6px; border-radius: 4px; margin-left: 10px; font-size: 9px; font-weight: 600;'>GLOBAL SECTOR MATRIX v18.0</span></div><div style='font-size:12px; color:{text_sub};'><span class='pulse-beacon'></span>GICS CORE RE-RENDER</div></div>", unsafe_allow_html=True)
+st.markdown(f"<div style='display: flex; align-items: center; justify-content: space-between; margin-top: -30px; border-bottom: 1px solid {border_color}; padding-bottom: 8px;'><div style='display:flex; align-items:center;'><h3 style='color: {text_main}; font-weight:800; letter-spacing:-0.5px; margin: 0;'>⚡ ALPHA ENGINE</h3><span style='background-color: {border_color}; color: {text_sub}; padding: 2px 6px; border-radius: 4px; margin-left: 10px; font-size: 9px; font-weight: 600;'>GLOBAL SECTOR MATRIX v20.0</span></div><div style='font-size:12px; color:{text_sub};'><span class='pulse-beacon'></span>GICS CORE ACTIVE</div></div>", unsafe_allow_html=True)
 st.write("")
 
 # 5. Top Menu Grid Control Panel
@@ -123,7 +153,7 @@ def get_fx_rate(from_curr, to_curr):
 # 6. 3-COLUMN MASTER ARCHITECTURE
 col_left_scan, col_center_chart, col_right_matrix = st.columns([3.3, 4.4, 2.3])
 
-# --- 🥇 ฝั่งที่ 1: ระบบจัดประเภทตาม GICS 11 Sectors ครบทุกหุ้นทั่วโลก (Left Column) ---
+# --- 🥇 ฝั่งที่ 1: ตารางจัดอันดับหุ้นที่แก้ไขล้างโค้ด HTML เรียบร้อยแล้ว (Left Column) ---
 with col_left_scan:
     st.markdown("<div class='section-title'>🗂️ GLOBAL INDUSTRY SECTOR FILTER</div>", unsafe_allow_html=True)
     
@@ -141,7 +171,6 @@ with col_left_scan:
         "📞 Communication Services (สื่อสาร/บันเทิง)"
     ])
     
-    # [FIXED] แก้ไขคีย์เวิร์ดภาษาจีนที่หลุดพิมพ์ผิดในกลุ่ม Materials เรียบร้อยแล้ว
     sector_database = {
         "🌐 Technology (เทคโนโลยี/AI)": ["NVDA", "AAPL", "MSFT", "AMD", "AVGO", "SMCI", "ASML", "INTC", "TSMC", "CRM", "DELTA.BK", "ADVANC.BK"],
         "🏥 Healthcare (การแพทย์/ยา)": ["LLY", "NVO", "JNJ", "MRK", "PFE", "ABBV", "TMO", "UNH", "BMY", "BDMS.BK", "BH.BK", "CHG.BK"],
@@ -193,21 +222,23 @@ with col_left_scan:
     if leaderboard_data:
         for idx, row in enumerate(leaderboard_data):
             is_active = "active-row-fx" if st.session_state['selected_ticker'] == row['TICKER'] else ""
-            st.markdown(f"<div class='rank-box-wrapper {is_active}'>", unsafe_allow_html=True)
             
-            if st.button(f"‌‌ &nbsp; &nbsp; &nbsp; &nbsp; **{row['TICKER']}** <br> &nbsp; &nbsp; &nbsp; &nbsp; <span style='font-size:11px; color:{text_sub};'>Close: {row['PRICE']:,.2f}</span>", key=f"btn_sec_{row['TICKER']}"):
-                st.session_state['selected_ticker'] = row['TICKER']
-                st.rerun()
+            # ใช้ st.markdown หุ้มกรอบภายนอก และใช้ st.columns จัดเรียงปุ่มกับตัวเลขด้านในอย่างถูกไวยากรณ์สากล
+            st.markdown(f"<div class='rank-box-container {is_active}'>", unsafe_allow_html=True)
+            r_col1, r_col2, r_col3 = st.columns([0.15, 0.55, 0.3])
             
-            st.markdown(f"""
-            <div style='position: absolute; top: 13px; left: 12px; pointer-events: none; display: flex; align-items: center;'>
-                <div class='rank-badge'>{idx+1:02d}</div>
-            </div>
-            <div style='position: absolute; top: 13px; right: 12px; pointer-events: none;'>
-                <div class='winrate-box'>{row['WINRATE']:.1f}%</div>
-            </div>
-            </div>
-            """, unsafe_allow_html=True)
+            with r_col1:
+                st.markdown(f"<span class='rank-num-label'>{idx+1:02d}</span>", unsafe_allow_html=True)
+            with r_col2:
+                # ปุ่มกดชื่อหุ้นแบบคลีนๆ ไร้โค้ดแปลกปลอมหลุดออกมา
+                if st.button(f"{row['TICKER']}", key=f"btn_sec_{row['TICKER']}"):
+                    st.session_state['selected_ticker'] = row['TICKER']
+                    st.rerun()
+                st.markdown(f"<div class='sub-price-text'>Close: {row['PRICE']:,.2f}</div>", unsafe_allow_html=True)
+            with r_col3:
+                st.markdown(f"<span class='winrate-pill'>{row['WINRATE']:.1f}%</span>", unsafe_allow_html=True)
+                
+            st.markdown("</div>", unsafe_allow_html=True)
 
 active_ticker = st.session_state['selected_ticker']
 
