@@ -9,10 +9,10 @@ import time
 
 # 1. Page Configuration
 st.set_page_config(
-    page_title="NEXUS QUANT // TERMINAL",
+    page_title="NEXUS QUANT // TRADINGVIEW PRO",
     page_icon="📊",
     layout="wide",
-    initial_sidebar_state="expanded" # เปิดแถบซ้ายสำหรับซ่อนฟังก์ชันตั้งค่าเงินทุนพอร์ต
+    initial_sidebar_state="expanded"
 )
 
 # 2. Setup State Memory
@@ -30,7 +30,7 @@ if st.session_state['dark_mode']:
     text_sub = "#848E9C"
     th_bg = "#1C2030"
     plotly_template = "plotly_dark"
-    grid_chart = "#1E222D"
+    grid_chart = "#1F222E"
     card_hover = "#2962FF"
     sentiment_bg = "#1E222D"
     rank_bg = "rgba(132, 142, 156, 0.1)"
@@ -67,7 +67,6 @@ st.markdown(f"""
     .zone-tp {{ background-color: rgba(255, 214, 0, 0.04); color: #FFD600; border-color: rgba(255, 214, 0, 0.15); }}
     .zone-sl {{ background-color: rgba(255, 82, 82, 0.04); color: #FF5252; border-color: rgba(255, 82, 82, 0.15); }}
     
-    /* 📈 Custom Premium Grid Table Bars (จัดระเบียบตารางพิกัดแนวรับแนวต้านใหม่) 📈 */
     .matrix-bar-row {{ display: flex; justify-content: space-between; padding: 6px 12px; border-radius: 4px; margin-bottom: 4px; font-size: 11px; font-weight: 600; border: 1px solid {border_color}; }}
     .m-r2 {{ background-color: rgba(255, 82, 82, 0.05); color: #FF5252; }}
     .m-r1 {{ background-color: rgba(255, 82, 82, 0.02); color: #FF8A80; }}
@@ -97,21 +96,21 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # 4. Header Bar
-st.markdown(f"<div style='display: flex; align-items: center; justify-content: space-between; margin-top: -30px; border-bottom: 1px solid {border_color}; padding-bottom: 6px;'><div style='display:flex; align-items:center;'><h3 style='color: {text_main}; font-weight:900; letter-spacing:-0.5px; margin: 0;'>📊 NEXUS QUANT</h3><span style='background-color: {border_color}; color: {text_sub}; padding: 2px 6px; border-radius: 4px; margin-left: 10px; font-size: 9px; font-weight: 700;'>INTELLIGENT TERMINAL v30.0</span></div><div style='font-size:11px; color:{text_sub};'><span class='pulse-beacon'></span>QUANT DATASTREAM CONNECTED</div></div>", unsafe_allow_html=True)
+st.markdown(f"<div style='display: flex; align-items: center; justify-content: space-between; margin-top: -30px; border-bottom: 1px solid {border_color}; padding-bottom: 6px;'><div style='display:flex; align-items:center;'><h3 style='color: {text_main}; font-weight:900; letter-spacing:-0.5px; margin: 0;'>📊 NEXUS QUANT</h3><span style='background-color: {border_color}; color: {text_sub}; padding: 2px 6px; border-radius: 4px; margin-left: 10px; font-size: 9px; font-weight: 700;'>INTELLIGENT TERMINAL v31.0</span></div><div style='font-size:11px; color:{text_sub};'><span class='pulse-beacon'></span>QUANT DATASTREAM CONNECTED</div></div>", unsafe_allow_html=True)
 st.write("")
 
-# 5. 🛠️ [OPTIMIZATION 1] ย้ายการตั้งค่าความเสี่ยงพอร์ตหลบเข้า Sidebar เพื่อให้หน้าจอบนสุดคลีนโล่งเป็นระเบียบ
-st.sidebar.markdown("<h4 style='font-size:14px; font-weight:700; color:#58A6FF;'>🧮 PORTFOLIO ACCOUNT</h4>", unsafe_allow_html=True)
+# 5. Sidebar Portfolio Settings
+st.sidebar.markdown("<h4 style='font-size:14px; font-weight:700; color:#58A6FF;'>🗮️ PORTFOLIO ACCOUNT</h4>", unsafe_allow_html=True)
 st.sidebar.write("---")
 account_capital = st.sidebar.number_input("เงินทุนรวมในพอร์ต:", value=10000.0, step=1000.0)
 risk_percent = st.sidebar.number_input("ความเสี่ยงต่อไม้ (%):", value=1.0, min_value=0.1, max_value=10.0, step=0.5)
 
-# แผงเมนูด้านบนเหลือเพียงตัวกรองหลักและปุ่มสลับกรอบเวลาด่วน (Quick Tabs Switcher)
+# Top Horizontal Filter Bar
 st.markdown("<div class='top-config-bar'>", unsafe_allow_html=True)
 tc1, tc2, tc3, tc4 = st.columns([2.5, 3.5, 3.5, 1.5])
 
 with tc1: risk_profile = st.selectbox("โมเดลบริหารความเสี่ยง:", ["CONSERVATIVE (ต่ำ)", "MODERATE (ปานกลาง)", "AGGRESSIVE (สูง)"])
-with tc2: timeframe_choice = st.radio("เลือกกรอบเวลาวิเคราะห์ชาร์ต (Quick Tabs):", ["M5 (5นาที)", "M15 (15นาที)", "H1 (1ชม.)", "D1 (1วัน)"], horizontal=True)
+with tc2: timeframe_choice = st.radio("เลือกกรอบเวลาวิเคราะห์ชาร์ต (TradingView Tabs):", ["M5 (5นาที)", "M15 (15นาที)", "H1 (1ชม.)", "D1 (1วัน)"], horizontal=True)
 with tc3: currency_target = st.selectbox("สกุลเงินในการประมวลผล:", ["สกุลเงินดั้งเดิมของหุ้น", "THB (บาทไทย)", "USD (ดอลลาร์สหรัฐ)"])
 with tc4: 
     st.write("<div style='margin-top:6px;'></div>", unsafe_allow_html=True)
@@ -211,7 +210,7 @@ with col_left_scan:
 
 active_ticker = st.session_state['selected_ticker']
 
-# --- 📊 ฝั่งที่ 2: ชาร์ตหลักแบบขยายพื้นที่เต็มจอ (Right Main Column) ---
+# --- 📊 ฝั่งที่ 2: หน้าจอวิเคราะห์กราฟโมเดล TradingView Pro (Right Main Column) ---
 with col_right_main:
     try:
         stock = yf.Ticker(active_ticker)
@@ -241,6 +240,7 @@ with col_right_main:
             long_name = info.get('longName', active_ticker)
             card_status_class = "card-bullish" if price_diff >= 0 else "card-bearish"
             
+            # Top Stat Summary Rows
             d1, d2, d3 = st.columns(3)
             arr_color = "#00E676" if price_diff >= 0 else "#FF5252"
             arr_icon = "▲" if price_diff >= 0 else "▼"
@@ -249,7 +249,6 @@ with col_right_main:
             with d2: st.markdown(f"<div class='quant-card {card_status_class}'><div class='card-title'>24H HIGH ({display_currency})</div><div class='card-value' style='color:#388BFD;'>{high_val:,.2f}</div></div>", unsafe_allow_html=True)
             with d3: st.markdown(f"<div class='quant-card {card_status_class}'><div class='card-title'>24H LOW ({display_currency})</div><div class='card-value' style='color:#FF5252;'>{low_val:,.2f}</div></div>", unsafe_allow_html=True)
             
-            # Fundamental Snapshot
             f_pe = info.get('trailingPE', None)
             f_div = info.get('dividendYield', 0.0)
             f_div_str = f"{f_div * 100:.2f}%" if f_div else "0.00%"
@@ -267,6 +266,14 @@ with col_right_main:
             hist_chart_converted = hist_chart.copy()
             for col in ['Open', 'High', 'Low', 'Close']: hist_chart_converted[col] = hist_chart_converted[col] * fx_factor
             
+            # --- 🛠️ ฐานคำนวณชุดตัวเลขและอินดิเคเตอร์ TradingView Style ---
+            last_bar = hist_chart_converted.iloc[-1] if not hist_chart_converted.empty else None
+            
+            # คำนวณเส้นริบบิ้นโครงสร้าง EMA 20, 50, 200 ยอดนิยม
+            hist_chart_converted['EMA20'] = hist_chart_converted['Close'].ewm(span=20, adjust=False).mean()
+            hist_chart_converted['EMA50'] = hist_chart_converted['Close'].ewm(span=50, adjust=False).mean()
+            hist_chart_converted['EMA200'] = hist_chart_converted['Close'].ewm(span=200, adjust=False).mean()
+            
             # RSI Calculation
             delta = hist_chart_converted['Close'].diff()
             gain = (delta.where(delta > 0, 0)).rolling(window=14).mean()
@@ -275,50 +282,63 @@ with col_right_main:
             hist_chart_converted['RSI'] = 100 - (100 / (1 + rs))
             current_rsi = hist_chart_converted['RSI'].iloc[-1] if not hist_chart_converted['RSI'].empty else 50.0
             
-            # ── 🛠️ [OPTIMIZATION 3] คำนวณอินดิเคเตอร์อัจฉริยะ เส้นค่าเฉลี่ย EMA 20 ฝังบนชาร์ตราคา ──
-            hist_chart_converted['EMA20'] = hist_chart_converted['Close'].ewm(span=20, adjust=False).mean()
-            
             sentiment_pct = np.clip(50 + (price_pct * 5) + (current_rsi - 50) * 0.5, 5.0, 95.0)
-            st.markdown(f"<div class='section-title' style='margin-top:12px; margin-bottom: 2px;'>📊 {long_name} SENTIMENT RADAR: {sentiment_pct:.1f}%</div>", unsafe_allow_html=True)
-            st.markdown(f"<div class='sentiment-container'><div class='sentiment-bar' style='width: {sentiment_pct}%;'></div></div>", unsafe_allow_html=True)
             
-            fig = make_subplots(rows=2, cols=1, shared_xaxes=True, row_heights=[0.80, 0.20], vertical_spacing=0.02)
+            # ── 🏆 [NEW VIEW ENGINE] การสลักตารางข้อมูล Metadata OHLC สไตล์ห้องค้าเทรดเดอร์สากล ──
+            if last_bar is not None:
+                st.markdown(f"""
+                <div style='font-size: 11px; font-family: monospace; color: {text_sub}; margin-top:12px; margin-bottom: -5px; background: {bg_card}; padding: 6px 12px; border-radius: 4px; border: 1px solid {border_color};'>
+                    <b style='color:#FFD600;'>{active_ticker.upper()}</b> &nbsp; 
+                    O: <span style='color:{text_main};'>{last_bar['Open']:,.2f}</span> &nbsp; 
+                    H: <span style='color:#00E676;'>{last_bar['High']:,.2f}</span> &nbsp; 
+                    L: <span style='color:#FF5252;'>{last_bar['Low']:,.2f}</span> &nbsp; 
+                    C: <span style='color:#00B0FF;'>{last_bar['Close']:,.2f}</span> &nbsp; 
+                    | &nbsp; <span style='color:#FF8A80;'>EMA(20,50,200)</span>
+                </div>
+                """, unsafe_allow_html=True)
+
+            # Subplot Canvas Rendering 
+            fig = make_subplots(rows=2, cols=1, shared_xaxes=True, row_heights=[0.80, 0.20], vertical_spacing=0.015)
             
+            # แท่งเทียนหลักสีเคลียร์ใสคมเข้ม
             fig.add_trace(go.Candlestick(
                 x=hist_chart_converted.index, open=hist_chart_converted['Open'], high=hist_chart_converted['High'], low=hist_chart_converted['Low'], close=hist_chart_converted['Close'],
                 increasing=dict(line=dict(color='#00E676', width=1.5), fillcolor='#00E676'), 
                 decreasing=dict(line=dict(color='#FF5252', width=1.5), fillcolor='#FF5252')
             ), row=1, col=1)
             
-            # วาดเส้นเนวิเกเตอร์ EMA 20 โอบล้อมแท่งเทียนสีฟ้านีออนบางเฉียบ
-            fig.add_trace(go.Scatter(
-                x=hist_chart_converted.index, y=hist_chart_converted['EMA20'],
-                line=dict(color='#00B0FF', width=1.3),
-                opacity=0.7,
-                hoverinfo='skip'
-            ), row=1, col=1)
+            # ── 🟢 [TRADINGVIEW OVERLAY] เพิ่มชุดเส้นริบบิ้น EMA 20 / 50 / 200 โอบตามราคาแบบสมูท ──
+            fig.add_trace(go.Scatter(x=hist_chart_converted.index, y=hist_chart_converted['EMA20'], line=dict(color='#FF7043', width=1.2), name='EMA 20', hoverinfo='skip'), row=1, col=1)
+            fig.add_trace(go.Scatter(x=hist_chart_converted.index, y=hist_chart_converted['EMA50'], line=dict(color='#00B0FF', width=1.2), name='EMA 50', hoverinfo='skip'), row=1, col=1)
+            fig.add_trace(go.Scatter(x=hist_chart_converted.index, y=hist_chart_converted['EMA200'], line=dict(color='#AB47BC', width=1.5), name='EMA 200', hoverinfo='skip'), row=1, col=1)
             
-            # เส้นระดับราคาปัจจุบัน
+            # เส้นพิกัดราคาปัจจุบันแบบเรียลไทม์
             fig.add_hline(
-                y=current_price, line_dash="dot", line_color="#2962FF", line_width=1.8, 
-                annotation_text=f" Current: {current_price:,.2f}", annotation_position="top right",
-                annotation_font=dict(size=10, color="#2962FF", family="Inter"),
+                y=current_price, line_dash="dot", line_color="#2962FF", line_width=1.5, 
+                annotation_text=f" Price: {current_price:,.2f}", annotation_position="top right",
+                annotation_font=dict(size=10, color="#2962FF", family="monospace"),
                 row=1, col=1
             )
             
+            # อินดิเคเตอร์ RSI ห้องล่าง
             fig.add_trace(go.Scatter(x=hist_chart_converted.index, y=hist_chart_converted['RSI'], line=dict(color='#FFD600', width=1.1)), row=2, col=1)
-            fig.add_hline(y=70, line_dash="dash", line_color="#FF5252", line_width=1.2, row=2, col=1)
-            fig.add_hline(y=30, line_dash="dash", line_color="#00E676", line_width=1.2, row=2, col=1)
+            fig.add_hline(y=70, line_dash="dash", line_color="rgba(255, 82, 82, 0.4)", line_width=1, row=2, col=1)
+            fig.add_hline(y=30, line_dash="dash", line_color="rgba(0, 230, 118, 0.4)", line_width=1, row=2, col=1)
             
             fig.update_layout(
                 template=plotly_template, xaxis_rangeslider_visible=False, paper_bgcolor=bg_app, plot_bgcolor=bg_card, 
-                margin=dict(l=4, r=4, t=4, b=4), height=490, showlegend=False, dragmode='pan'
+                margin=dict(l=4, r=4, t=6, b=4), height=500, showlegend=False, dragmode='pan',
+                # ── 🟢 [CROSSHAIR BEACON] เปิดฟังก์ชัน Crosshair ลากเส้นตามแกนเมาส์แบบเรียลไทม์ ──
+                hovermode='x unified'
             )
-            fig.update_yaxes(gridcolor='#1F222E', zerolinecolor='#2A2E39', fixedrange=False, linewidth=1)
-            fig.update_xaxes(gridcolor='#1F222E', fixedrange=False, linewidth=1)
+            
+            # จัดการความหนาแน่นและสีสันของเส้นตารางกริดหลังชาร์ตให้บางเฉียบ
+            fig.update_yaxes(gridcolor='#1F222E', zerolinecolor='#2A2E39', fixedrange=False, linewidth=1, tickfont=dict(size=10, color=text_sub))
+            fig.update_xaxes(gridcolor='#1F222E', fixedrange=False, linewidth=1, tickfont=dict(size=10, color=text_sub))
             
             st.plotly_chart(fig, use_container_width=True, config={'scrollZoom': True, 'displayModeBar': True})
             
+            # ── แผงแสดงพิกัดแบบแถบแดชบอร์ดด้านล่างชาร์ตเทคนิคอล ──
             st.write("---")
             st.markdown("<div class='section-title'>🎯 LIVE SPOT & OPTIONS MATRIX DIAGNOSTIC</div>", unsafe_allow_html=True)
             
@@ -356,10 +376,9 @@ with col_right_main:
                 """, unsafe_allow_html=True)
                 
             with mb3:
-                # ── 🛠️ [OPTIMIZATION 4] เรนเดอร์แผนพิกัดแนวรับแนวต้านแบบแถบสีกึ่งแดชบอร์ดระดับพรีเมียม ──
                 st.markdown(f"<div class='matrix-bar-row m-r2'><span>แนวต้านสำคัญ (R2)</span><span>{R2:,.2f}</span></div>", unsafe_allow_html=True)
                 st.markdown(f"<div class='matrix-bar-row m-r1'><span>แนวต้านแรก (R1)</span><span>{R1:,.2f}</span></div>", unsafe_allow_html=True)
-                st.markdown(f"<div class='matrix-bar-row m-pivot'><span>จุดดุลยภาพราคา (Pivot)</span><span>{P:,.2f}</span></div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='matrix-bar-row m-pivot'><span>จุดศูนย์ดุลราคา (Pivot)</span><span>{P:,.2f}</span></div>", unsafe_allow_html=True)
                 st.markdown(f"<div class='matrix-bar-row m-s1'><span>แนวรับแรก (S1)</span><span>{S1:,.2f}</span></div>", unsafe_allow_html=True)
                 st.markdown(f"<div class='matrix-bar-row m-s2'><span>แนวรับสำคัญ (S2)</span><span>{S2:,.2f}</span></div>", unsafe_allow_html=True)
                 
